@@ -6,7 +6,9 @@ using namespace std;
 #include "Restaurant.h"
 #include "..\Events\ArrivalEvent.h"
 
-
+#include <istream>
+#include <ostream>
+#include <fstream>
 Restaurant::Restaurant() 
 {
 	pGUI = NULL;
@@ -30,6 +32,141 @@ void Restaurant::RunSimulation()
 
 	};
 
+}
+
+void Restaurant::ReadInputs()
+{
+	ifstream InputFile;
+	InputFile.open("Input.txt");
+	
+
+	int Normal_C, Vegan_C, VIP_C; //For Number of cooks of each type
+	InputFile >> Normal_C >> Vegan_C >> VIP_C;
+
+	int SN, SG, SV; //Normal cook speed, Vegan cook speed and VIP cook speed
+	InputFile >> SN >> SG >> SV;
+
+	int BO, BN, BG, BV; 
+	/*
+	BO: the number of orders a cook must prepare before taking a break
+	BN: the break duration (in timesteps) for normal cooks
+	BG: the break duration for vegan ones
+	BV: the break duration for VIP cooks.
+	*/
+
+	InputFile >> BO >> BN >> BG >> BV;
+
+	//Creating the cooks :
+	int CookID = 0;
+
+
+	//VIP Cooks :
+
+	for (int i = 0; i < VIP_C; i++)
+	{
+		Cook* Cook_ptr = new Cook(CookID++, TYPE_VIP, SV, BV, BO);
+		VIP_Cooks.enqueue(Cook_ptr);
+	}
+
+	//Normal Cooks
+
+	for (int i = 0; i < Normal_C; i++)
+	{
+		Cook* Cook_ptr = new Cook(CookID++, TYPE_NRM, SV, BV, BO);
+		VIP_Cooks.enqueue(Cook_ptr);
+	}
+
+	//VEGAN Cooks :
+
+	for (int i = 0; i < Vegan_C; i++)
+	{
+		Cook* Cook_ptr = new Cook(CookID++, TYPE_VGAN, SV, BV, BO);
+		VIP_Cooks.enqueue(Cook_ptr);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	int AutoP; //that represent the number of timesteps after which an order is automatically promoted to VIP.
+	InputFile >> AutoP;
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	int M; //Number of events 
+
+	// Start of loop of number of events
+	for (int i = 0; i < M; i++)
+	{
+		char EVENT, TYP;
+		int TS; //Type step
+		int ID; //is a unique sequence number that identifies each order.
+		int SIZE; //is the number of dishes of the order
+		int MONY; //is the total order money.
+		InputFile >> EVENT;
+		switch (EVENT)
+		{
+		case'R' :
+			////////////////////////////////////////////
+				InputFile >> TYP >> TS >> ID >> SIZE >> MONY;
+				float Equation = MONY + (1000 / TS) + SIZE;
+				switch (TYP)
+				{
+
+				case 'N':
+
+					Event* pE = new ArrivalEvent(TS, ID, TYPE_NRM, Equation);
+					EventsQueue.enqueue(pE);
+
+					break;
+
+
+				case 'V':
+
+					Event* pE = new ArrivalEvent(TS, ID, TYPE_VIP, Equation);
+					EventsQueue.enqueue(pE);
+
+					break;
+
+
+				case 'G':
+
+					Event* pE = new ArrivalEvent(TS, ID, TYPE_VGAN, Equation);
+					EventsQueue.enqueue(pE);
+
+					break;
+	
+
+				default:
+					break;
+				}
+			
+
+			break;
+
+			///////////////////////////////////////////////////
+
+		case 'X':
+			//TODO
+			//Cancelation Pointer will be created and reading It's parameters
+			break;
+
+			////////////////////////////////////////////////////////////////////
+
+		case 'P':
+			//TODO
+			//Promotion poiter is to be created and reading it's parameters
+
+			break;
+			//////////////////////////////////////////////////////////////
+
+		default:
+			break;
+		}
+
+
+	} 
+	//End of loop of number of events .....
+
+	/////////////////////////////////////////////////////////////////////////////////
 }
 
 
@@ -190,6 +327,21 @@ void Restaurant::Just_A_Demo()
 void Restaurant::AddtoDemoQueue(Order *pOrd)
 {
 	DEMO_Queue.enqueue(pOrd);
+}
+
+void Restaurant::AddtoVIPQueue(Order* po, int Pir)
+{
+	VIP_Orders.enqueue(po, Pir);
+}
+
+void Restaurant::AddtoNormalQueue(Order* po, int Pir)
+{
+	Normal_Orders.enqueue(po, Pir);
+}
+
+void Restaurant::AddtoVeganQueue(Order* po, int Pir)
+{
+	Vegan_Orders.enqueue(po, Pir);
 }
 
 /// ==> end of DEMO-related function

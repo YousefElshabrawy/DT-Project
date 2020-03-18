@@ -9,7 +9,7 @@ The queue is implemented as a chain of linked nodes that has two pointers,
 a frontPtr pointer for the front of the queue and a backPtr pointer for the back of the queue.
 */
 
-/*
+/*	
 
 				The Node: item of type T and a "next" pointer
 					------------- 

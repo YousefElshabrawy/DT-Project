@@ -2,6 +2,7 @@
 #define __ARRIVAL_EVENT_H_
 
 #include "Event.h"
+#include "..\PiriortyQueue.h"
 
 
 //class for the arrival event
@@ -11,8 +12,10 @@ class ArrivalEvent: public Event
 	int OrdDistance;	//order distance
 	ORD_TYPE OrdType;		//order type: Normal, vegan, VIP	                
 	double OrdMoney;	//Total order money
+	float Piriorty_Of_Order;
 public:
 	ArrivalEvent(int eTime, int oID, ORD_TYPE oType);
+	ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty); //Added to Set The piriorty of the order
 	//Add more constructors if needed
 	
 	virtual void Execute(Restaurant *pRest);	//override execute function
