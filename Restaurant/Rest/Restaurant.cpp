@@ -22,6 +22,7 @@ void Restaurant::RunSimulation()
 	switch (mode)	//Add a function for each mode in next phases
 	{
 	case MODE_INTR:
+		Interactive_mode();
 		break;
 	case MODE_STEP:
 		break;
@@ -40,19 +41,12 @@ void Restaurant::ReadInputs()
 	InputFile.open("Input.txt");
 	
 
-	int Normal_C, Vegan_C, VIP_C; //For Number of cooks of each type
+
 	InputFile >> Normal_C >> Vegan_C >> VIP_C;
 
-	int SN, SG, SV; //Normal cook speed, Vegan cook speed and VIP cook speed
 	InputFile >> SN >> SG >> SV;
 
-	int BO, BN, BG, BV; 
-	/*
-	BO: the number of orders a cook must prepare before taking a break
-	BN: the break duration (in timesteps) for normal cooks
-	BG: the break duration for vegan ones
-	BV: the break duration for VIP cooks.
-	*/
+
 
 	InputFile >> BO >> BN >> BG >> BV;
 
@@ -86,12 +80,11 @@ void Restaurant::ReadInputs()
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	int AutoP; //that represent the number of timesteps after which an order is automatically promoted to VIP.
 	InputFile >> AutoP;
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	int M; //Number of events 
+	InputFile >> M;
 
 	// Start of loop of number of events
 	for (int i = 0; i < M; i++)
@@ -108,12 +101,13 @@ void Restaurant::ReadInputs()
 			////////////////////////////////////////////
 				InputFile >> TYP >> TS >> ID >> SIZE >> MONY;
 				float Equation = MONY + (1000 / TS) + SIZE;
+				Event* pE;
 				switch (TYP)
 				{
 
 				case 'N':
 
-					Event* pE = new ArrivalEvent(TS, ID, TYPE_NRM, Equation);
+					pE = new ArrivalEvent(TS, ID, TYPE_NRM, Equation);
 					EventsQueue.enqueue(pE);
 
 					break;
@@ -121,7 +115,7 @@ void Restaurant::ReadInputs()
 
 				case 'V':
 
-					Event* pE = new ArrivalEvent(TS, ID, TYPE_VIP, Equation);
+					pE = new ArrivalEvent(TS, ID, TYPE_VIP, Equation);
 					EventsQueue.enqueue(pE);
 
 					break;
@@ -129,7 +123,7 @@ void Restaurant::ReadInputs()
 
 				case 'G':
 
-					Event* pE = new ArrivalEvent(TS, ID, TYPE_VGAN, Equation);
+					pE = new ArrivalEvent(TS, ID, TYPE_VGAN, Equation);
 					EventsQueue.enqueue(pE);
 
 					break;
@@ -203,6 +197,64 @@ void Restaurant::FillDrawingList()
 	//It should get orders from orders lists/queues/stacks/whatever (same for Cooks)
 	//To add orders it should call function  void GUI::AddToDrawingList(Order* pOrd);
 	//To add Cooks it should call function  void GUI::AddToDrawingList(Cook* pCc);
+
+
+	Order* pOrd;
+	Cook** pCVIP_Array = VIP_Cooks.toArray(VIP_C);
+	Cook** pCNormal_Array = Normal_Cooks.toArray(Normal_C);
+	Cook** pCVegan_Array = Vegan_Cooks.toArray(Vegan_C);
+
+	//Normal_C + Vegan_C + Normal_Cooks   Vegan_Cooks
+	//Let's add ALL randomly generated Cooks to GUI::DrawingList
+	for (int i = 0; i < VIP_C; i++)
+		pGUI->AddToDrawingList(pCVIP_Array[i]);
+
+	for (int i = 0; i < Normal_C; i++)
+		pGUI->AddToDrawingList(pCNormal_Array[i]);
+
+	for (int i = 0; i < Vegan_C; i++)
+		pGUI->AddToDrawingList(pCVegan_Array[i]);
+
+	//Let's add ALL randomly generated Ordes to GUI::DrawingList
+	int nomOf_VIP_Orders;   //need initialization
+	int nomOf_Normal_Orders;   //need initialization
+	int nomOf_Vegan_Orders;   //need initialization
+
+
+	Order** VIP_Orders_Array = VIP_Orders.ToArray(nomOf_VIP_Orders);
+	Order** Normal_Orders_Array = Normal_Orders.ToArray(nomOf_Normal_Orders);
+	Order** Vegan_Orders_Array = Vegan_Orders.ToArray(nomOf_Vegan_Orders);
+
+
+	for (int i = 0; i < nomOf_VIP_Orders; i++)
+	{
+		pOrd = VIP_Orders_Array[i];
+		pGUI->AddToDrawingList(pOrd);
+	}
+
+	for (int i = 0; i < nomOf_Normal_Orders; i++)
+	{
+		pOrd = Normal_Orders_Array[i];
+		pGUI->AddToDrawingList(pOrd);
+	}
+
+	for (int i = 0; i < nomOf_Vegan_Orders; i++)
+	{
+		pOrd = Vegan_Orders_Array[i];
+		pGUI->AddToDrawingList(pOrd);
+	}
+
+	pGUI->UpdateInterface();
+	Sleep(1000);
+	pGUI->ResetDrawingList();
+
+	delete pOrd;
+	delete pCVIP_Array;
+	delete pCNormal_Array;
+	delete pCVegan_Array;
+	delete VIP_Orders_Array;
+	delete Normal_Orders_Array;
+	delete Vegan_Orders_Array;
 
 }
 
@@ -344,7 +396,57 @@ void Restaurant::AddtoVeganQueue(Order* po, int Pir)
 	Vegan_Orders.enqueue(po, Pir);
 }
 
+
+
 /// ==> end of DEMO-related function
 //////////////////////////////////////////////////////////////////////////////////////////////
+void Restaurant::Interactive_mode()
+{
+	ReadInputs();
 
+	int CurrentTimeStep = 1;
+
+
+	//as long as events queue is not empty yet
+	while (!EventsQueue.isEmpty())
+	{
+		//print current timestep
+		char timestep[10];
+		itoa(CurrentTimeStep, timestep, 10);
+		pGUI->PrintMessage(timestep);
+
+
+		//The next line may add new orders to the DEMO_Queue
+		ExecuteEvents(CurrentTimeStep);	//execute all events at current time step
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+		/// The next code section should be done through function "FillDrawingList()" once you
+		/// decide the appropriate list type for Orders and Cooks
+
+		
+		
+		//Let's add ALL randomly generated Cooks to GUI::DrawingList
+
+
+		//Let's add ALL randomly generated Ordes to GUI::DrawingList
+
+		FillDrawingList();
+		
+
+
+		/////////////////////////////////////////////////////////////////////////////////////////
+
+		//pGUI->UpdateInterface();
+		Sleep(1000);
+		CurrentTimeStep++;	//advance timestep
+		//pGUI->ResetDrawingList();
+	}
+
+
+
+	pGUI->PrintMessage("generation done, click to END program");
+	pGUI->waitForClick();
+
+}
 
