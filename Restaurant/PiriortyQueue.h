@@ -6,7 +6,7 @@ class PiriorityQueue
 {
 private:
 	//Data Members :
-	Node<Type>* Front;
+	PirorityNode <Type>* Front;
 
 public:
 	PiriorityQueue();
@@ -38,8 +38,8 @@ PiriorityQueue<Type>::PiriorityQueue()
 template <typename Type>
 bool PiriorityQueue<Type>::enqueue(const Type& newEntry, int priority)
 {
-	Node<Type>* Temp, * Q;
-	Temp = new Node<Type>(newEntry, priority);
+	PirorityNode<Type>* Temp, * Q;
+	Temp = new PirorityNode<Type>(newEntry, priority);
 
 	if (Front == nullptr || priority > Front->GetPiriorty())
 	{
@@ -63,7 +63,7 @@ bool PiriorityQueue<Type>::enqueue(const Type& newEntry, int priority)
 template <typename Type>
 bool PiriorityQueue<Type>::dequeue(Type& Entry)
 {
-	Node<Type>* Temp;
+	PirorityNode<Type>* Temp;
 	if (Front == nullptr)
 		return false;
 	Temp = Front;
@@ -107,7 +107,7 @@ T* PiriorityQueue<T>::ToArray(int& count)
 	if (!Front)
 		return nullptr;
 	//counting the no. of items in the Queue
-	Node<T>* p = Front;
+	PirorityNode<T>* p = Front;
 	while (p)
 	{
 		count++;
