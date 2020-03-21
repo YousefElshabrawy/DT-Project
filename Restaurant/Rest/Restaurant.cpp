@@ -227,8 +227,8 @@ void Restaurant::FillDrawingList()
 
 	//make array of orders to add them to GUI
 	Order** VIP_Orders_Array = VIP_Orders.ToArray(nomOf_VIP_Orders);
-	Order** Normal_Orders_Array = Normal_Orders.ToArray(nomOf_Normal_Orders);
-	Order** Vegan_Orders_Array = Vegan_Orders.ToArray(nomOf_Vegan_Orders);
+	Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
+	Order** Vegan_Orders_Array = Vegan_Orders.toArray(nomOf_Vegan_Orders);
 
 
 	for (int i = 0; i < nomOf_VIP_Orders; i++)
@@ -382,16 +382,17 @@ void Restaurant::AddtoVIPQueue(Order* po, int Pir)
 {
 	VIP_Orders.enqueue(po, Pir);
 }
-
-void Restaurant::AddtoNormalQueue(Order* po, int Pir)
+void Restaurant::AddtoNormalQueue(Order* po)
 {
-	Normal_Orders.enqueue(po, Pir);
+	Normal_Orders.enqueue(po);
 }
 
-void Restaurant::AddtoVeganQueue(Order* po, int Pir)
+void Restaurant::AddtoVeganQueue(Order* po)
 {
-	Vegan_Orders.enqueue(po, Pir);
+	Vegan_Orders.enqueue(po);
 }
+
+
 
 
 

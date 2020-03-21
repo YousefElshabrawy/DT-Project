@@ -29,10 +29,10 @@ void ArrivalEvent::Execute(Restaurant* pRest)
 	switch (OrdType)
 	{
 	case TYPE_NRM:
-		pRest->AddtoNormalQueue(pOrd, Piriorty_Of_Order);
+		pRest->AddtoNormalQueue(pOrd);
 		break;
 	case TYPE_VGAN:
-		pRest->AddtoVeganQueue(pOrd, Piriorty_Of_Order);
+		pRest->AddtoVeganQueue(pOrd);
 		break;
 	case TYPE_VIP:
 		pRest->AddtoVIPQueue(pOrd, Piriorty_Of_Order);
