@@ -210,8 +210,7 @@ void Restaurant::FillDrawingList()
 	Cook** pCNormal_Array = Normal_Cooks.toArray(Normal_C);
 	Cook** pCVegan_Array = Vegan_Cooks.toArray(Vegan_C);
 
-	//Normal_C + Vegan_C + Normal_Cooks   Vegan_Cooks
-	//Let's add ALL randomly generated Cooks to GUI::DrawingList
+	//add all Cooks to GUI::DrawingList
 	for (int i = 0; i < VIP_C; i++)
 		pGUI->AddToDrawingList(pCVIP_Array[i]);
 
@@ -221,12 +220,12 @@ void Restaurant::FillDrawingList()
 	for (int i = 0; i < Vegan_C; i++)
 		pGUI->AddToDrawingList(pCVegan_Array[i]);
 
-	//Let's add ALL randomly generated Ordes to GUI::DrawingList
+	//add all Ordes to GUI::DrawingList
 	int nomOf_VIP_Orders;   //need initialization
 	int nomOf_Normal_Orders;   //need initialization
 	int nomOf_Vegan_Orders;   //need initialization
 
-
+	//make array of orders to add them to GUI
 	Order** VIP_Orders_Array = VIP_Orders.ToArray(nomOf_VIP_Orders);
 	Order** Normal_Orders_Array = Normal_Orders.ToArray(nomOf_Normal_Orders);
 	Order** Vegan_Orders_Array = Vegan_Orders.ToArray(nomOf_Vegan_Orders);
@@ -253,8 +252,6 @@ void Restaurant::FillDrawingList()
 	pGUI->UpdateInterface();
 	Sleep(1000);
 	pGUI->ResetDrawingList();
-
-
 
 }
 
@@ -416,31 +413,19 @@ void Restaurant::Interactive_mode()
 		pGUI->PrintMessage(timestep);
 
 
-		//The next line may add new orders to the DEMO_Queue
-		ExecuteEvents(CurrentTimeStep);	//execute all events at current time step
+		//execute all events at current time step
+		ExecuteEvents(CurrentTimeStep);	
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-		/// The next code section should be done through function "FillDrawingList()" once you
-		/// decide the appropriate list type for Orders and Cooks
-
-
-
-		//Let's add ALL randomly generated Cooks to GUI::DrawingList
-
-
-		//Let's add ALL randomly generated Ordes to GUI::DrawingList
-
+		//add all current ordes & cooks to GUI
 		FillDrawingList();
 
 
 
 		/////////////////////////////////////////////////////////////////////////////////////////
 
-		//pGUI->UpdateInterface();
 		Sleep(1000);
 		CurrentTimeStep++;	//advance timestep
-		//pGUI->ResetDrawingList();
 	}
 
 
