@@ -1,7 +1,11 @@
-﻿  Restaurant.cpp
+﻿  Demo_Main.cpp
+  ArrivalEvent.cpp
+C:\Users\dell\Desktop\Project\Data Structure\DT-Project\Restaurant\Events\ArrivalEvent.cpp(38,30): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Restaurant.cpp
 C:\Users\dell\Desktop\Project\Data Structure\DT-Project\Restaurant\Rest\Restaurant.cpp(279,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
 C:\Users\dell\Desktop\Project\Data Structure\DT-Project\Restaurant\Rest\Restaurant.cpp(333,1): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdlib.h(1323): message : see declaration of 'itoa'
-C:\Users\dell\Desktop\Project\Data Structure\DT-Project\Restaurant\Rest\Restaurant.cpp(412,1): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+C:\Users\dell\Desktop\Project\Data Structure\DT-Project\Restaurant\Rest\Restaurant.cpp(413,1): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdlib.h(1323): message : see declaration of 'itoa'
+  Generating Code...
   Restaurant.vcxproj -> C:\Users\dell\Desktop\Project\Data Structure\DT-Project\Debug\Restaurant.exe
