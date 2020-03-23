@@ -114,6 +114,9 @@
     <ClInclude Include="PirorityNode.h">
       <Filter>Generic_DS</Filter>
     </ClInclude>
+    <ClInclude Include="CancelEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Demo_Main.cpp" />
@@ -239,6 +242,9 @@
     </ClCompile>
     <ClCompile Include="Rest\Cook.cpp">
       <Filter>Restaurant</Filter>
+    </ClCompile>
+    <ClCompile Include="CancelEvent.cpp">
+      <Filter>Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
