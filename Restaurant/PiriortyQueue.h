@@ -11,6 +11,7 @@ private:
 public:
 	PiriorityQueue();
 	bool enqueue(const Type& newEntry, int priority);
+	
 	bool dequeue(Type& Entry);
 	bool IsEmpty()const;
 	bool peekFront(Type& frntEntry)const;
@@ -56,6 +57,8 @@ bool PiriorityQueue<Type>::enqueue(const Type& newEntry, int priority)
 	}
 	return true;
 }
+
+
 
 
 // iii-dequeue (Send tha data to a parameter and then delete the Node) "Pop"

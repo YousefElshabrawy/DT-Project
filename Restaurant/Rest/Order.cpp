@@ -44,3 +44,8 @@ ORD_STATUS Order::getStatus() const
 	return status;
 }
 
+bool Order::operator==(int Value)
+{
+	return (this->ID==Value)?true:false;
+}
+

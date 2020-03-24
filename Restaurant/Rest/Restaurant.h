@@ -7,7 +7,7 @@
 #include "..\Generic_DS\Queue.h"
 #include "..\Events\Event.h"
 #include "..\PiriortyQueue.h"
-
+#include "..\ListADT.h"
 #include "Order.h"
 #include "Cook.h"
 #include <istream>
@@ -26,8 +26,8 @@ private:
 	Queue<Cook*> Normal_Cooks;
 	PiriorityQueue<Order*> VIP_Orders;
 	Queue<Order*> Vegan_Orders;
-	Queue<Order*> Normal_Orders;
-
+	//Queue<Order*> Normal_Orders;
+	ListADT<Order*>Normal_Orders;
 	/// ===================    Inputs from file   ================= 
 
 	int Normal_C, Vegan_C, VIP_C; //For Number of cooks of each type
@@ -77,7 +77,7 @@ public:
 	//
 	// TODO: Add More Member Functions As Needed
 	//
-
+	Order* GetNormalOrderByID(int ID);
 
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 

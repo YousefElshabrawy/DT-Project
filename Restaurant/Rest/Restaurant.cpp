@@ -5,7 +5,8 @@ using namespace std;
 
 #include "Restaurant.h"
 #include "..\Events\ArrivalEvent.h"
-
+#include "..\PromotionEvent.h"
+#include "..\CancelEvent.h"
 #include <istream>
 #include <ostream>
 #include <fstream>
@@ -109,7 +110,7 @@ void Restaurant::ReadInputs()
 
 			case 'N':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_NRM, Equation);
+				pE = new ArrivalEvent(TS, ID, TYPE_NRM,Equation);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
 				break;
@@ -125,7 +126,7 @@ void Restaurant::ReadInputs()
 
 			case 'G':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_VGAN, Equation);
+				pE = new ArrivalEvent(TS, ID, TYPE_VGAN,Equation);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
 				break;
@@ -143,18 +144,24 @@ void Restaurant::ReadInputs()
 
 
 		case 'X':
-			//TODO
+			//TODO (DONE)
 				//Cancelation Pointer will be created and reading It's parameters
 			InputFile >> TS >> ID;
+			pE = new CancelEvent(TS, ID);
+			EventsQueue.enqueue(pE);
+			pE = NULL;
 
 		break;
 
 			////////////////////////////////////////////////////////////////////
 
 		case 'P':
-			//TODO
+			//TODO (DONE)
 			//Promotion poiter is to be created and reading it's parameters
 			InputFile >> TS >> ID >> ExMony;
+			pE = new PromotionEvent(TS, ID, ExMony);
+			EventsQueue.enqueue(pE);
+			pE = NULL;
 
 		break;
 			//////////////////////////////////////////////////////////////
@@ -263,6 +270,13 @@ void Restaurant::FillDrawingList()
 ///  DEMO-related functions. Should be removed in phases 1&2
 
 //Begin of DEMO-related functions
+
+
+
+Order* Restaurant::GetNormalOrderByID(int ID)
+{
+	return Normal_Orders.SearchByID(ID);
+}
 
 //This is just a demo function for project introductory phase
 //It should be removed starting phase 1
@@ -384,7 +398,8 @@ void Restaurant::AddtoVIPQueue(Order* po, int Pir)
 }
 void Restaurant::AddtoNormalQueue(Order* po)
 {
-	Normal_Orders.enqueue(po);
+	//Normal_Orders.enqueue(po);
+	Normal_Orders.pushEnd(po);
 }
 
 void Restaurant::AddtoVeganQueue(Order* po)

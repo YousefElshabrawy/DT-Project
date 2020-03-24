@@ -39,6 +39,10 @@ public:
 	// TODO: Add More Member Functions As Needed
 	//
 
+
+	//Operator Overloading for The ==
+	bool operator ==(int Value);
+
 };
 
 #endif
