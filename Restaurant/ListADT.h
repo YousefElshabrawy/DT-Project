@@ -77,7 +77,7 @@ inline bool ListADT<Type>::pushEnd(const Type& NewEntry)
 		End = NewNode;
 	}
 	else
-		End->SetNextNode(NewNode);
+		End->setNext(NewNode);
 	End = NewNode;
 	return true;
 }
@@ -102,7 +102,7 @@ inline Type ListADT<Type>::SearchByID(int ID)
 {
 
 	Node<Type>* CurrentNode;
-	if (Head->getItem() == ID) //Indication that it is the first Node
+	if (Head->getItem() == (Type)ID) //Indication that it is the first Node
 	{
 		Type T = Head->getItem();
 		Node<Type>* Temp = Head;
@@ -117,7 +117,7 @@ inline Type ListADT<Type>::SearchByID(int ID)
 	Type Value = NULL; //to be checked when is needed to be used
 	while (CurrentNode)
 	{
-		if (CurrentNode->getItem() == ID)
+		if (CurrentNode->getItem() == (Type)ID)
 		{
 			PrevNode->setNext(CurrentNode->getNext());
 			Value = CurrentNode->getItem();
@@ -146,7 +146,7 @@ inline Type* ListADT<Type>::toArray(int& count)
 	if (!Head)
 		return nullptr;
 	//counting the no. of items in the Queue
-	Node<T>* p = Head;
+	Node<Type>* p = Head;
 	while (p)
 	{
 		count++;
