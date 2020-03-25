@@ -7,10 +7,13 @@ ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType):Event(eTime, oID)
 {
 	OrdType = oType;
 }
-ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty) : Event(eTime, oID)
+ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty, int arrivaltime, int money, int size) : Event(eTime, oID)
 {
 	OrdType = oType;
 	this->Piriorty_Of_Order = Piriorty;
+	this->ordarrivaltime = arrivaltime;
+	this->OrdMoney = money;
+	this->ordersize = size;
 }
 
 void ArrivalEvent::Execute(Restaurant* pRest)
@@ -24,7 +27,7 @@ void ArrivalEvent::Execute(Restaurant* pRest)
 	///Remove the next code lines in phases 1&2
 	//pRest->AddtoDemoQueue(pOrd);
 
-	Order* pOrd = new Order(OrderID,OrdType);
+	Order* pOrd = new Order(OrderID, OrdType, ordarrivaltime, OrdMoney, ordersize);
 	
 	switch (OrdType)
 	{

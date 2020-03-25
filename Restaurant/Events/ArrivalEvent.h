@@ -13,9 +13,11 @@ class ArrivalEvent: public Event
 	ORD_TYPE OrdType;		//order type: Normal, vegan, VIP	                
 	double OrdMoney;	//Total order money
 	float Piriorty_Of_Order;
+	int ordarrivaltime;
+	int ordersize;
 public:
 	ArrivalEvent(int eTime, int oID, ORD_TYPE oType);
-	ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty); //Added to Set The piriorty of the order
+	ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty, int arrivaltime, int money, int size); //Added to Set The piriorty of the order
 	//Add more constructors if needed
 	
 	virtual void Execute(Restaurant *pRest);	//override execute function
