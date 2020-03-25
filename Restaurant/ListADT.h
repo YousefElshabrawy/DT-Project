@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Generic_DS/Node.h"
+#include "Order.h"
 #include <iostream>
 using namespace std;
 template <class Type>
@@ -8,7 +9,7 @@ class ListADT
 {
 	Node<Type>* Head;
 	Node<Type>* End;
-
+	int size;
 public:
 
 	//Constructor : This Constructor is to intialize the Head and End pointers of the List
@@ -31,6 +32,7 @@ public:
 
 	Type* toArray(int& count);	//returns array of T (array if items)
 
+	int GetSize();
 
 	//Destructor to deallocate the List
 	~ListADT();
@@ -48,6 +50,7 @@ inline ListADT<Type>::ListADT()
 {
 	Head = nullptr;
 	End = nullptr;
+	size = 0;
 }
 
 template<class Type>
@@ -58,11 +61,13 @@ inline bool ListADT<Type>::push(const Type& NewEntry)
 	if (!Head)
 	{
 		Head = NewNode;
+		size++;
 	}
 	else
 	{
 		NewNode->setNext(Head);
 		Head = NewNode;
+		size++;
 	}
 	return true;
 }
@@ -79,6 +84,7 @@ inline bool ListADT<Type>::pushEnd(const Type& NewEntry)
 	else
 		End->setNext(NewNode);
 	End = NewNode;
+	size++;
 	return true;
 }
 
@@ -93,6 +99,7 @@ inline bool ListADT<Type>::pop(Type& Entry)
 	Head = Head->getNext();
 	delete Temp;
 	Temp = nullptr;
+	size--;
 	return true;
 
 }
@@ -100,15 +107,18 @@ inline bool ListADT<Type>::pop(Type& Entry)
 template<class Type>
 inline Type ListADT<Type>::SearchByID(int ID)
 {
+	if (IsEmpty())
+		return nullptr;
 
 	Node<Type>* CurrentNode;
-	if (Head->getItem() == (Type)ID) //Indication that it is the first Node
+	if (Head->getItem()->GetID() == ID) //Indication that it is the first Node
 	{
 		Type T = Head->getItem();
 		Node<Type>* Temp = Head;
 		Head = Head->getNext();
 		delete Temp;
 		Temp = nullptr;
+		size--;
 		return T;
 	}
 	//If It Isnot the Head
@@ -117,19 +127,19 @@ inline Type ListADT<Type>::SearchByID(int ID)
 	Type Value = NULL; //to be checked when is needed to be used
 	while (CurrentNode)
 	{
-		if (CurrentNode->getItem() == (Type)ID)
+		if (CurrentNode->getItem()->GetID() == ID)
 		{
 			PrevNode->setNext(CurrentNode->getNext());
 			Value = CurrentNode->getItem();
 			delete CurrentNode;
 			CurrentNode = nullptr;
+			size--;
 			return Value;
 		}
 		PrevNode = CurrentNode;
 		CurrentNode = CurrentNode->getNext();
 	}
 	return Value;
-	
 }
 
 template<class Type>
@@ -165,6 +175,12 @@ inline Type* ListADT<Type>::toArray(int& count)
 }
 
 template<class Type>
+inline int ListADT<Type>::GetSize()
+{
+	return size;
+}
+
+template<class Type>
 inline bool ListADT<Type>::DeleteItem(const Type& Entry)
 {
 	Node<Type>* Temp = Head;
@@ -175,6 +191,7 @@ inline bool ListADT<Type>::DeleteItem(const Type& Entry)
 		Head = Head->getNext();
 		delete Temp;
 		Temp = nullptr;
+		size--;
 		return true;
 	}
 	//If Not the Head 
@@ -189,6 +206,7 @@ inline bool ListADT<Type>::DeleteItem(const Type& Entry)
 			Temp = Temp->getNext();
 			delete tptr;
 			tptr = nullptr;
+			size--;
 			return true;
 		}
 		else
@@ -204,6 +222,7 @@ template<class Type>
 inline ListADT<Type>::~ListADT()
 {
 	delete Head;
+	size = 0;
 }
 
 

@@ -7,7 +7,7 @@ class PiriorityQueue
 private:
 	//Data Members :
 	PirorityNode <Type>* Front;
-
+	int size;
 public:
 	PiriorityQueue();
 	bool enqueue(const Type& newEntry, int priority);
@@ -16,6 +16,7 @@ public:
 	bool IsEmpty()const;
 	bool peekFront(Type& frntEntry)const;
 	Type* ToArray(int& count);
+	int GetSize();
 	~PiriorityQueue();
 
 };
@@ -31,6 +32,7 @@ template <typename Type>
 PiriorityQueue<Type>::PiriorityQueue()
 {
 	Front = nullptr;
+	size = 0;
 }
 
 
@@ -46,6 +48,7 @@ bool PiriorityQueue<Type>::enqueue(const Type& newEntry, int priority)
 	{
 		Temp->SetNode(Front);
 		Front = Temp;
+		size++;
 	}
 	else
 	{
@@ -54,6 +57,7 @@ bool PiriorityQueue<Type>::enqueue(const Type& newEntry, int priority)
 			Q = Q->GetNext();
 		Temp->SetNode(Q->GetNext());
 		Q->SetNode(Temp);
+		size++;
 	}
 	return true;
 }
@@ -73,6 +77,7 @@ bool PiriorityQueue<Type>::dequeue(Type& Entry)
 	Entry = Temp->GetData();
 	Front = Front->GetNext();
 	delete Temp;
+	size--;
 	return true;
 }
 
@@ -126,6 +131,12 @@ T* PiriorityQueue<T>::ToArray(int& count)
 		p = p->GetNext();
 	}
 	return Arr;
+}
+
+template<typename Type>
+inline int PiriorityQueue<Type>::GetSize()
+{
+	return size;
 }
 
 template<typename Type>
