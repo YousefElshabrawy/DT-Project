@@ -11,7 +11,7 @@ protected:
 	ORD_TYPE type;		//order type: Normal, vegan, VIP
 	ORD_STATUS status;	//waiting, in-service, done
 	int Distance;	//The distance (in meters) between the order location and the resturant 
-	                
+	int size;
 	double totalMoney;	//Total order money
 
 	int ArrTime, ServTime, FinishTime;	//arrival, service start, and finish times
@@ -22,15 +22,23 @@ protected:
 	//
 
 public:
-	Order(int ID, ORD_TYPE r_Type);
+	Order(int ID, ORD_TYPE r_Type, int AT, double cost, int sizeoforder);
 	virtual ~Order();
 
 	int GetID();
+	int GetArrTime();
+	int GetSize();
 
+	void SetType(ORD_TYPE newtype);
 	ORD_TYPE GetType() const;
 
 	void SetDistance(int d);
 	int GetDistance() const;
+
+	void SettotalMoney(double mon);
+	double GettotalMoney() const;
+
+	void AddExtraMoney(double mon);
 
 	void setStatus(ORD_STATUS s);
 	ORD_STATUS getStatus() const;

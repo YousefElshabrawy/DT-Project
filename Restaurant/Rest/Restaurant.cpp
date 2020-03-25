@@ -30,7 +30,7 @@ void Restaurant::RunSimulation()
 	case MODE_SLNT:
 		break;
 	case MODE_DEMO:
-		Just_A_Demo();
+		Simple_Simulator();
 		break;
 
 	};
@@ -110,7 +110,7 @@ void Restaurant::ReadInputs()
 
 			case 'N':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_NRM,Equation);
+				pE = new ArrivalEvent(TS, ID, TYPE_NRM, Equation, TS, MONY, SIZE);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
 				break;
@@ -118,7 +118,7 @@ void Restaurant::ReadInputs()
 
 			case 'V':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_VIP, Equation);
+				pE = new ArrivalEvent(TS, ID, TYPE_VIP, Equation, TS, MONY, SIZE);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
 				break;
@@ -126,7 +126,7 @@ void Restaurant::ReadInputs()
 
 			case 'G':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_VGAN,Equation);
+				pE = new ArrivalEvent(TS, ID, TYPE_VGAN, Equation, TS, MONY, SIZE);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
 				break;
@@ -136,7 +136,7 @@ void Restaurant::ReadInputs()
 				break;
 			}
 
-		break;
+			break;
 
 
 
@@ -151,7 +151,7 @@ void Restaurant::ReadInputs()
 			EventsQueue.enqueue(pE);
 			pE = NULL;
 
-		break;
+			break;
 
 			////////////////////////////////////////////////////////////////////
 
@@ -163,7 +163,7 @@ void Restaurant::ReadInputs()
 			EventsQueue.enqueue(pE);
 			pE = NULL;
 
-		break;
+			break;
 			//////////////////////////////////////////////////////////////
 
 
@@ -228,15 +228,18 @@ void Restaurant::FillDrawingList()
 		pGUI->AddToDrawingList(pCVegan_Array[i]);
 
 	//add all Ordes to GUI::DrawingList
-	int nomOf_VIP_Orders;   //need initialization
-	int nomOf_Normal_Orders;   //need initialization
-	int nomOf_Vegan_Orders;   //need initialization
+	int nomOf_VIP_Orders = VIP_Orders.GetSize();
+	int nomOf_Normal_Orders = Normal_Orders.GetSize();
+	int nomOf_Vegan_Orders = Vegan_Orders.GetSize();
+	int nomOf_IN_Service_Orders = In_Service_List.GetSize();
+	int nomOf_Finished_Orders = finished_List.GetSize();
 
 	//make array of orders to add them to GUI
 	Order** VIP_Orders_Array = VIP_Orders.ToArray(nomOf_VIP_Orders);
 	Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
 	Order** Vegan_Orders_Array = Vegan_Orders.toArray(nomOf_Vegan_Orders);
-
+	Order** IN_Service_Array = In_Service_List.toArray(nomOf_IN_Service_Orders);
+	Order** Finished_Array = finished_List.toArray(nomOf_Finished_Orders);
 
 	for (int i = 0; i < nomOf_VIP_Orders; i++)
 	{
@@ -253,6 +256,18 @@ void Restaurant::FillDrawingList()
 	for (int i = 0; i < nomOf_Vegan_Orders; i++)
 	{
 		pOrd = Vegan_Orders_Array[i];
+		pGUI->AddToDrawingList(pOrd);
+	}
+
+	for (int i = 0; i < nomOf_IN_Service_Orders; i++)
+	{
+		pOrd = IN_Service_Array[i];
+		pGUI->AddToDrawingList(pOrd);
+	}
+
+	for (int i = 0; i < nomOf_Finished_Orders; i++)
+	{
+		pOrd = Finished_Array[i];
 		pGUI->AddToDrawingList(pOrd);
 	}
 
@@ -277,6 +292,12 @@ Order* Restaurant::GetNormalOrderByID(int ID)
 {
 	return Normal_Orders.SearchByID(ID);
 }
+
+void Restaurant::DeleteNormalOrder(Order* order)
+{
+	Normal_Orders.DeleteItem(order);
+}
+
 
 //This is just a demo function for project introductory phase
 //It should be removed starting phase 1
@@ -407,6 +428,16 @@ void Restaurant::AddtoVeganQueue(Order* po)
 	Vegan_Orders.enqueue(po);
 }
 
+void Restaurant::AddtoInServiceList(Order* po)
+{
+	In_Service_List.pushEnd(po);
+}
+
+void Restaurant::ADDtoFinishedList(Order* po)
+{
+	finished_List.pushEnd(po);
+}
+
 
 
 
@@ -419,7 +450,6 @@ void Restaurant::Interactive_mode()
 
 	int CurrentTimeStep = 1;
 
-
 	//as long as events queue is not empty yet
 	while (!EventsQueue.isEmpty())
 	{
@@ -428,9 +458,8 @@ void Restaurant::Interactive_mode()
 		itoa(CurrentTimeStep, timestep, 10);
 		pGUI->PrintMessage(timestep);
 
-
 		//execute all events at current time step
-		ExecuteEvents(CurrentTimeStep);	
+		ExecuteEvents(CurrentTimeStep);
 
 
 		//add all current ordes & cooks to GUI
@@ -449,5 +478,109 @@ void Restaurant::Interactive_mode()
 	pGUI->PrintMessage("generation done, click to END program");
 	pGUI->waitForClick();
 
+}
+
+void Restaurant::Simple_Simulator()
+{
+	ReadInputs();
+
+	int CurrentTimeStep = 0;
+
+	//as long as events queue is not empty yet
+	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
+	{
+		//print current timestep
+		char timestep[10];
+		itoa(CurrentTimeStep, timestep, 10);
+		pGUI->PrintMessage(timestep);
+
+		//execute all events at current time step
+		//should ignore promotion events 
+		ExecuteEvents(CurrentTimeStep);
+
+		//Pick one order from each order type and move it to In-service list(s)
+		Order* ORD;
+		if (VIP_Orders.peekFront(ORD))
+		{
+			if (ORD->GetArrTime() != CurrentTimeStep)
+			{
+				ORD->setStatus(SRV);
+				AddtoInServiceList(ORD);
+				VIP_Orders.dequeue(ORD);
+				ORD = NULL;
+			}
+		}
+
+		int nomOf_Normal_Orders = Normal_Orders.GetSize();
+		Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
+		if (!Normal_Orders.IsEmpty())
+		{
+			if (Normal_Orders_Array[0]->GetArrTime() != CurrentTimeStep)
+			{
+				Normal_Orders_Array[0]->setStatus(SRV);
+				AddtoInServiceList(Normal_Orders_Array[0]);
+				Normal_Orders.pop(Normal_Orders_Array[0]);
+			}
+		}
+
+		if (Vegan_Orders.peekFront(ORD))
+		{
+			if (ORD->GetArrTime() != CurrentTimeStep)
+			{
+				ORD->setStatus(SRV);
+				AddtoInServiceList(ORD);
+				Vegan_Orders.dequeue(ORD);
+				ORD = NULL;
+			}
+		}
+
+		if (CurrentTimeStep % 5 == 0)
+		{
+			bool finishedNormal = false, finishedVIP = false, finishedVEGAN = false;
+
+			int nomOf_IN_SERVICE_ORDERS = In_Service_List.GetSize();
+			Order** In_Service_Array = In_Service_List.toArray(nomOf_IN_SERVICE_ORDERS);
+
+			for (int i = 0; i < nomOf_IN_SERVICE_ORDERS; i++)
+			{
+				if (!finishedVIP && In_Service_Array[i]->GetType() == TYPE_VIP)
+				{
+					In_Service_Array[i]->setStatus(DONE);
+					ADDtoFinishedList(In_Service_Array[i]);
+					In_Service_List.DeleteItem(In_Service_Array[i]);
+					finishedVIP = true;
+				}
+				else if (!finishedNormal && In_Service_Array[i]->GetType() == TYPE_NRM)
+				{
+					In_Service_Array[i]->setStatus(DONE);
+					ADDtoFinishedList(In_Service_Array[i]);
+					In_Service_List.DeleteItem(In_Service_Array[i]);
+					finishedNormal = true;
+				}
+				else if (!finishedVEGAN && In_Service_Array[i]->GetType() == TYPE_VGAN)
+				{
+					In_Service_Array[i]->setStatus(DONE);
+					ADDtoFinishedList(In_Service_Array[i]);
+					In_Service_List.DeleteItem(In_Service_Array[i]);
+					finishedVEGAN = true;
+				}
+			}
+		}
+
+		//add all current ordes & cooks to GUI
+		FillDrawingList();
+
+
+
+		/////////////////////////////////////////////////////////////////////////////////////////
+
+		pGUI->waitForClick();
+		CurrentTimeStep++;	//advance timestep
+	}
+
+
+
+	pGUI->PrintMessage("generation done, click to END program");
+	pGUI->waitForClick();
 }
 

@@ -28,6 +28,8 @@ private:
 	Queue<Order*> Vegan_Orders;
 	//Queue<Order*> Normal_Orders;
 	ListADT<Order*>Normal_Orders;
+	ListADT<Order*>In_Service_List;
+	ListADT<Order*>finished_List;
 	/// ===================    Inputs from file   ================= 
 
 	int Normal_C, Vegan_C, VIP_C; //For Number of cooks of each type
@@ -78,7 +80,7 @@ public:
 	// TODO: Add More Member Functions As Needed
 	//
 	Order* GetNormalOrderByID(int ID);
-
+	void DeleteNormalOrder(Order* order);
 /// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
 
 	void Just_A_Demo();	//just to show a demo and should be removed in phase1 1 & 2
@@ -86,11 +88,14 @@ public:
 	void AddtoVIPQueue(Order* po,int Pir);
 	void AddtoNormalQueue(Order* po);
 	void AddtoVeganQueue(Order* po);
+	void AddtoInServiceList(Order* po);
+	void ADDtoFinishedList(Order* po);
 
 
 /// ===================    Interactive mode-related functions.    ================= 
 
 	void Interactive_mode();	
+	void Simple_Simulator();
 
 
 
