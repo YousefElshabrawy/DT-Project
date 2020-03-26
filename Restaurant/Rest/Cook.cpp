@@ -12,6 +12,10 @@ Cook::Cook(int ID, ORD_TYPE oT, int Speed, int BreakDuration, int NumberBeforeBr
 	speed = Speed;
 	Break_Duration = BreakDuration;
 	Number_Orders_BeforeBreak = NumberBeforeBreak;
+	cooking = false;
+	TimeTODeliver = 0;
+	OrderServing = nullptr;
+	numofServedorders = 0;
 }
 
 
@@ -46,6 +50,21 @@ int Cook::GetNumber_Of_Orders_Before_Break() const
 	return Number_Orders_BeforeBreak;
 }
 
+bool Cook::GetCooking() const
+{
+	return cooking;
+}
+
+Order* Cook::GetServingOrder() const
+{
+	return OrderServing;
+}
+
+int Cook::GetTimeTODeliver() const
+{
+	return TimeTODeliver;
+}
+
 
 void Cook::setID(int id)
 {
@@ -70,6 +89,31 @@ void Cook::SetBreak_Duration(int BD)
 void Cook::SetNumberBeforeBreak(int N)
 {
 	Number_Orders_BeforeBreak = N;
+}
+
+void Cook::SetCooking(bool assign)
+{
+	cooking = assign;
+}
+
+void Cook::SetOrderForServing(Order* ord)
+{
+	OrderServing = ord;
+}
+
+void Cook::SetTimeTODeliver(int time)
+{
+	TimeTODeliver = time;
+}
+
+void Cook::ServedOrder()
+{
+	numofServedorders++;
+}
+
+void Cook::ResetNumOfServedOrders()
+{
+	numofServedorders = 0;
 }
 
 

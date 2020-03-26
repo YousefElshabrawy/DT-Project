@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\Defs.h"
+#include "Order.h"
 
 #pragma once
 class Cook
@@ -10,6 +11,11 @@ class Cook
 	int speed;		//dishes it can prepare in one clock tick (in one timestep)
 	int Break_Duration;
 	int Number_Orders_BeforeBreak;
+	bool cooking;  //identicate if the cook is available or not
+	Order* OrderServing;  //identicate the order that cook is cooking
+	int TimeTODeliver;
+	int numofServedorders;
+	
 public:
 	Cook();
 	Cook(int ID, ORD_TYPE oT, int Speed, int BreakDuration, int NumberBeforeBreak);
@@ -20,12 +26,20 @@ public:
 	int GetSpeed()const;
 	int GetBreakDuration()const;
 	int GetNumber_Of_Orders_Before_Break()const;
+	bool GetCooking()const;
+	Order* GetServingOrder()const;
+	int GetTimeTODeliver()const;
 
 	void setID(int);
 	void setType(ORD_TYPE) ;
 	void setSpeed(int s);
 	void SetBreak_Duration(int BD);
 	void SetNumberBeforeBreak(int N);
+	void SetCooking(bool assign);
+	void SetOrderForServing(Order* ord);
+	void SetTimeTODeliver(int time);
 
+	void ServedOrder();
+	void ResetNumOfServedOrders();
 
 };

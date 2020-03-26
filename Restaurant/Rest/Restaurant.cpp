@@ -26,6 +26,7 @@ void Restaurant::RunSimulation()
 		Interactive_mode();
 		break;
 	case MODE_STEP:
+		Step_By_Step_mode();
 		break;
 	case MODE_SLNT:
 		break;
@@ -40,7 +41,7 @@ void Restaurant::RunSimulation()
 void Restaurant::ReadInputs()
 {
 	ifstream InputFile;
-	InputFile.open("Input.txt");
+	InputFile.open("StepByStep.txt");
 
 
 
@@ -438,6 +439,11 @@ void Restaurant::ADDtoFinishedList(Order* po)
 	finished_List.pushEnd(po);
 }
 
+void Restaurant::AddtoUnavailable_Cooks(Cook* CK)
+{
+	Unavailable_Cooks.pushEnd(CK);
+}
+
 
 
 
@@ -448,7 +454,7 @@ void Restaurant::Interactive_mode()
 {
 	ReadInputs();
 
-	int CurrentTimeStep = 1;
+	int CurrentTimeStep = 0;
 
 	//as long as events queue is not empty yet
 	while (!EventsQueue.isEmpty())
@@ -486,7 +492,7 @@ void Restaurant::Simple_Simulator()
 
 	int CurrentTimeStep = 0;
 
-	//as long as events queue is not empty yet
+	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
 	{
 		//print current timestep
@@ -534,6 +540,7 @@ void Restaurant::Simple_Simulator()
 			}
 		}
 
+		//Each 5 timesteps, move an order of each type from In-service list(s) to finished list(s)
 		if (CurrentTimeStep % 5 == 0)
 		{
 			bool finishedNormal = false, finishedVIP = false, finishedVEGAN = false;
@@ -570,15 +577,127 @@ void Restaurant::Simple_Simulator()
 		//add all current ordes & cooks to GUI
 		FillDrawingList();
 
-
-
-		/////////////////////////////////////////////////////////////////////////////////////////
-
 		pGUI->waitForClick();
 		CurrentTimeStep++;	//advance timestep
 	}
 
 
+
+	pGUI->PrintMessage("generation done, click to END program");
+	pGUI->waitForClick();
+}
+
+void Restaurant::Step_By_Step_mode()
+{
+	ReadInputs();
+
+	int CurrentTimeStep = 0;
+
+	//as long as events queue or in service orders are not empty yet
+	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
+	{
+		//print current timestep
+		char timestep[10];
+		itoa(CurrentTimeStep, timestep, 10);
+		pGUI->PrintMessage(timestep);
+
+		//execute all events at current time step
+		ExecuteEvents(CurrentTimeStep);
+
+		//check for all cooks one after one if they serviced enough orders to have a break 
+
+		//assign orders to in-service
+		Order* ORD;
+		Cook* COK;
+		int nomOf_Normal_Orders = Normal_Orders.GetSize();
+		Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
+		int Idex_Of_Normal_Orders_Array = 0;
+
+		while (VIP_Orders.peekFront(ORD) && VIP_Cooks.peekFront(COK))
+		{
+			ORD->setStatus(SRV);
+			AddtoInServiceList(ORD);
+			VIP_Orders.dequeue(ORD);
+
+			COK->SetCooking(true);
+			COK->SetOrderForServing(ORD);
+			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+			AddtoUnavailable_Cooks(COK);
+			VIP_Cooks.dequeue(COK);
+			ORD = NULL;
+			COK = NULL;
+		}
+
+		while (!Normal_Orders.IsEmpty() && Normal_Cooks.peekFront(COK))
+		{
+			Normal_Orders_Array[Idex_Of_Normal_Orders_Array]->setStatus(SRV);
+			AddtoInServiceList(Normal_Orders_Array[Idex_Of_Normal_Orders_Array]);
+			Normal_Orders.pop(Normal_Orders_Array[Idex_Of_Normal_Orders_Array]);
+
+			COK->SetCooking(true);
+			COK->SetOrderForServing(Normal_Orders_Array[Idex_Of_Normal_Orders_Array]);
+			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(Normal_Orders_Array[Idex_Of_Normal_Orders_Array]->GetSize()) / COK->GetSpeed()));
+			AddtoUnavailable_Cooks(COK);
+			Normal_Cooks.dequeue(COK);
+			Idex_Of_Normal_Orders_Array++;
+			COK = NULL;
+		}
+
+		while (Vegan_Orders.peekFront(ORD) && Vegan_Cooks.peekFront(COK))
+		{
+			ORD->setStatus(SRV);
+			AddtoInServiceList(ORD);
+			Vegan_Orders.dequeue(ORD);
+
+			COK->SetCooking(true);
+			COK->SetOrderForServing(ORD);
+			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+			AddtoUnavailable_Cooks(COK);
+			Vegan_Cooks.dequeue(COK);
+			ORD = NULL;
+			COK = NULL;
+		}
+
+		//move finished orders from In-service list to finished list
+		int numofunavailblecooks = Unavailable_Cooks.GetSize();
+		Cook** Unavailable_Cooks_Array = Unavailable_Cooks.toArray(numofunavailblecooks);
+		for (int i = 0; i < numofunavailblecooks; i++)
+		{			
+			if (Unavailable_Cooks_Array[i]->GetCooking())
+			{
+				if (Unavailable_Cooks_Array[i]->GetTimeTODeliver()==CurrentTimeStep)
+				{
+					Unavailable_Cooks_Array[i]->GetServingOrder()->setStatus(DONE);
+					ADDtoFinishedList(Unavailable_Cooks_Array[i]->GetServingOrder());
+					In_Service_List.DeleteItem(Unavailable_Cooks_Array[i]->GetServingOrder());
+					
+					Unavailable_Cooks_Array[i]->ServedOrder();
+					Unavailable_Cooks_Array[i]->SetCooking(false);
+					Unavailable_Cooks_Array[i]->SetOrderForServing(nullptr);
+					if (Unavailable_Cooks_Array[i]->GetType() == TYPE_VIP)
+					{
+						VIP_Cooks.enqueue(Unavailable_Cooks_Array[i]);
+					}
+					else if (Unavailable_Cooks_Array[i]->GetType() == TYPE_NRM)
+					{
+						Normal_Cooks.enqueue(Unavailable_Cooks_Array[i]);
+					}
+					else
+					{
+						Vegan_Cooks.enqueue(Unavailable_Cooks_Array[i]);
+					}
+					Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
+				}
+			}
+			//else if cook in break
+		}
+
+		//add all current ordes & cooks to GUI
+		FillDrawingList();
+
+		pGUI->waitForClick();
+		CurrentTimeStep++;	//advance timestep
+	}
 
 	pGUI->PrintMessage("generation done, click to END program");
 	pGUI->waitForClick();

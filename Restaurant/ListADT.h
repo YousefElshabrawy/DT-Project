@@ -201,13 +201,28 @@ inline bool ListADT<Type>::DeleteItem(const Type& Entry)
 	{
 		if (Temp->getItem() == Entry)
 		{
-			prev->setNext(Temp->getNext());
-			Node<Type>* tptr = Temp;
-			Temp = Temp->getNext();
-			delete tptr;
-			tptr = nullptr;
-			size--;
-			return true;
+			if (Temp != End)
+			{
+				prev->setNext(Temp->getNext());
+				Node<Type>* tptr = Temp;
+				Temp = Temp->getNext();
+				delete tptr;
+				tptr = nullptr;
+				size--;
+				return true;
+			}
+			else
+			{
+				prev->setNext(Temp->getNext());
+				Node<Type>* tptr = Temp;
+				Temp = Temp->getNext();
+				delete tptr;
+				tptr = nullptr;
+				size--;
+				End = prev;
+				return true;
+			}
+
 		}
 		else
 		{

@@ -20,7 +20,7 @@ private:
 	GUI *pGUI;
 	Queue<Event*> EventsQueue;	//Queue of all events that will be loaded from file
 
-	Queue<Cook*> Unavailable_Cooks;
+	ListADT<Cook*> Unavailable_Cooks;
 	Queue<Cook*> VIP_Cooks;
 	Queue<Cook*> Vegan_Cooks;
 	Queue<Cook*> Normal_Cooks;
@@ -90,13 +90,14 @@ public:
 	void AddtoVeganQueue(Order* po);
 	void AddtoInServiceList(Order* po);
 	void ADDtoFinishedList(Order* po);
+	void AddtoUnavailable_Cooks(Cook* CK);
 
 
 /// ===================    Interactive mode-related functions.    ================= 
 
 	void Interactive_mode();	
 	void Simple_Simulator();
-
+	void Step_By_Step_mode();
 
 
 
