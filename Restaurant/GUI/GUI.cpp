@@ -92,6 +92,8 @@ void GUI::ClearDrawingArea() const
 	pWind->SetPen(KHAKI, 3);
 	pWind->SetBrush(KHAKI);
 	pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
+	//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void GUI::DrawRestArea() const

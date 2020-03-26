@@ -58,6 +58,7 @@ private:
 		RestStartY = YHalfDrawingArea - RestWidth/2, //The y coordinate of the upper left corner of the Rest
 		RestEndY = YHalfDrawingArea + RestWidth/2,   //The y coordinate of the lower right corner of the Rest
 
+		RestHeight = RestEndY - RestStartY, //The Height of the Rest (Note: the Rest is a Square)	
 
 		FontSize = 20,	//font size used to draw orders ID on Interface
 		OrderWidth = 2*FontSize,	//width of the order to be drawn on GUI
