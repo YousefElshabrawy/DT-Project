@@ -91,8 +91,8 @@ void GUI::ClearDrawingArea() const
 	// Clearing the Drawing area
 	pWind->SetPen(KHAKI, 3);
 	pWind->SetBrush(KHAKI);
-	pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
-	//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+	//pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
+	pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
 
 }
 ///////////////////////////////////////////////////////////////////////////////////
