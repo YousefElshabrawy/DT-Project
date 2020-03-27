@@ -65,6 +65,11 @@ int Cook::GetTimeTODeliver() const
 	return TimeTODeliver;
 }
 
+int Cook::GetNumOfServedOrders() const
+{
+	return numofServedorders;
+}
+
 
 void Cook::setID(int id)
 {

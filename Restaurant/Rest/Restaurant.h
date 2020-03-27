@@ -18,6 +18,7 @@ class Restaurant
 {	
 private:
 	GUI *pGUI;
+	bool testing;
 	Queue<Event*> EventsQueue;	//Queue of all events that will be loaded from file
 
 	ListADT<Cook*> Unavailable_Cooks;
@@ -72,7 +73,7 @@ public:
 	void RunSimulation();
 
 	void ReadInputs();
-
+	bool GetTesting()const;
 
 	void FillDrawingList();
 

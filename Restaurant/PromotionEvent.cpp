@@ -17,12 +17,15 @@ PromotionEvent::PromotionEvent(int oTime, int oID, double Money) :Event(oTime, o
 
 void PromotionEvent::Execute(Restaurant* pRest)
 {
-	Order* ORD = pRest->GetNormalOrderByID(oID);
-	if (ORD)
+	if (!pRest->GetTesting())
 	{
-		ORD->AddExtraMoney(ExMONY);
-		ORD->SetType(TYPE_VIP);
-		int Equation = ORD->GettotalMoney() + (1000 / (float)ORD->GetArrTime()) + ORD->GetSize();
-		pRest->AddtoVIPQueue(ORD, -1); // -1 Is an indication that it is added to the end of the queue as the priorties are all postitive	
+		Order* ORD = pRest->GetNormalOrderByID(oID);
+		if (ORD)
+		{
+			ORD->AddExtraMoney(ExMONY);
+			ORD->SetType(TYPE_VIP);
+			int Equation = ORD->GettotalMoney() + (1000 / (float)ORD->GetArrTime()) + ORD->GetSize();
+			pRest->AddtoVIPQueue(ORD, -1); // -1 Is an indication that it is added to the end of the queue as the priorties are all postitive	
+		}
 	}
 }

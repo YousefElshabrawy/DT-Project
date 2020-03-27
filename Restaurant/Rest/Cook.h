@@ -29,6 +29,7 @@ public:
 	bool GetCooking()const;
 	Order* GetServingOrder()const;
 	int GetTimeTODeliver()const;
+	int GetNumOfServedOrders()const;
 
 	void setID(int);
 	void setType(ORD_TYPE) ;

@@ -13,6 +13,7 @@ using namespace std;
 Restaurant::Restaurant()
 {
 	pGUI = NULL;
+	testing = false;
 }
 
 void Restaurant::RunSimulation()
@@ -175,6 +176,11 @@ void Restaurant::ReadInputs()
 	//End of loop of number of events .....
 
 	/////////////////////////////////////////////////////////////////////////////////
+}
+
+bool Restaurant::GetTesting() const
+{
+	return testing;
 }
 
 
@@ -488,6 +494,7 @@ void Restaurant::Interactive_mode()
 
 void Restaurant::Simple_Simulator()
 {
+	testing = true;
 	ReadInputs();
 
 	int CurrentTimeStep = 0;
@@ -604,14 +611,39 @@ void Restaurant::Step_By_Step_mode()
 		//execute all events at current time step
 		ExecuteEvents(CurrentTimeStep);
 
-		//check for all cooks one after one if they serviced enough orders to have a break 
-
-		//assign orders to in-service
 		Order* ORD;
 		Cook* COK;
 		int nomOf_Normal_Orders = Normal_Orders.GetSize();
 		Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
 		int Idex_Of_Normal_Orders_Array = 0;
+
+		//check for all cooks one after one if they serviced enough orders to have a break 
+		while (VIP_Cooks.peekFront(COK))
+		{
+			if (COK->GetNumber_Of_Orders_Before_Break()==COK->GetNumOfServedOrders())
+			{
+				
+			}
+		}
+
+		while (Normal_Cooks.peekFront(COK))
+		{
+			if (COK->GetNumber_Of_Orders_Before_Break() == COK->GetNumOfServedOrders())
+			{
+
+			}
+		}
+
+		while (Vegan_Cooks.peekFront(COK))
+		{
+			if (COK->GetNumber_Of_Orders_Before_Break() == COK->GetNumOfServedOrders())
+			{
+
+			}
+		}
+
+		//assign orders to in-service
+
 
 		while (VIP_Orders.peekFront(ORD) && VIP_Cooks.peekFront(COK))
 		{
