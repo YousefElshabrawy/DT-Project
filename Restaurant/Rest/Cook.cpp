@@ -65,9 +65,19 @@ int Cook::GetTimeTODeliver() const
 	return TimeTODeliver;
 }
 
+int Cook::GetTimeBackWork() const
+{
+	return TimeBackWork;
+}
+
 int Cook::GetNumOfServedOrders() const
 {
 	return numofServedorders;
+}
+
+int Cook::Getnomoftakenbreaks() const
+{
+	return nomoftakenbreaks;
 }
 
 
@@ -111,6 +121,11 @@ void Cook::SetTimeTODeliver(int time)
 	TimeTODeliver = time;
 }
 
+void Cook::SetTimeBackWork(int time)
+{
+	TimeBackWork = time;
+}
+
 void Cook::ServedOrder()
 {
 	numofServedorders++;
@@ -120,5 +135,11 @@ void Cook::ResetNumOfServedOrders()
 {
 	numofServedorders = 0;
 }
+
+void Cook::takebreak()
+{
+	nomoftakenbreaks++;
+}
+
 
 

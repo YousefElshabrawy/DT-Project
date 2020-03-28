@@ -15,6 +15,8 @@ class Cook
 	Order* OrderServing;  //identicate the order that cook is cooking
 	int TimeTODeliver;
 	int numofServedorders;
+	int TimeBackWork;
+	int nomoftakenbreaks;
 	
 public:
 	Cook();
@@ -29,7 +31,9 @@ public:
 	bool GetCooking()const;
 	Order* GetServingOrder()const;
 	int GetTimeTODeliver()const;
+	int GetTimeBackWork()const;
 	int GetNumOfServedOrders()const;
+	int Getnomoftakenbreaks()const;
 
 	void setID(int);
 	void setType(ORD_TYPE) ;
@@ -39,8 +43,9 @@ public:
 	void SetCooking(bool assign);
 	void SetOrderForServing(Order* ord);
 	void SetTimeTODeliver(int time);
+	void SetTimeBackWork(int time);
 
 	void ServedOrder();
 	void ResetNumOfServedOrders();
-
+	void takebreak();
 };
