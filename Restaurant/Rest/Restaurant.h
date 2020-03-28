@@ -22,9 +22,9 @@ private:
 	Queue<Event*> EventsQueue;	//Queue of all events that will be loaded from file
 
 	ListADT<Cook*> Unavailable_Cooks;
-	Queue<Cook*> VIP_Cooks;
-	Queue<Cook*> Vegan_Cooks;
-	Queue<Cook*> Normal_Cooks;
+	ListADT<Cook*> VIP_Cooks;
+	ListADT<Cook*> Vegan_Cooks;
+	ListADT<Cook*> Normal_Cooks;
 	PiriorityQueue<Order*> VIP_Orders;
 	Queue<Order*> Vegan_Orders;
 	//Queue<Order*> Normal_Orders;
@@ -48,15 +48,10 @@ private:
 
 
 
-	/// ============================================================ 
-
-
-
-	/// ==> 
-	//	DEMO-related members. Should be removed in phases 1&2
-	Queue<Order*> DEMO_Queue;	//Important: This is just for demo
-
-	/// ==>
+	/// ===================    Restaurant outputs   =================
+	int NumOfDeliveredVIPOrders;
+	int NumOfDeliveredNORMALOrders;
+	int NumOfDeliveredVEGANOrders;
 	
 	
 	
@@ -82,10 +77,8 @@ public:
 	//
 	Order* GetNormalOrderByID(int ID);
 	void DeleteNormalOrder(Order* order);
-/// ===================    DEMO-related functions. Should be removed in phases 1&2   ================= 
+/// ===================       ================= 
 
-	void Just_A_Demo();	//just to show a demo and should be removed in phase1 1 & 2
-	void AddtoDemoQueue(Order* po);	//adds an order to the demo queue
 	void AddtoVIPQueue(Order* po,int Pir);
 	void AddtoNormalQueue(Order* po);
 	void AddtoVeganQueue(Order* po);
