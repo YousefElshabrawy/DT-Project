@@ -26,6 +26,7 @@ public:
 
 	bool pop(Type& Entry);
 	bool DeleteItem(const Type& Entry);
+	bool peekFront(Type& frntEntry)  const;
 	//bool SearchAndExtract(Type);
 	Type SearchByID(int ID);
 	bool IsEmpty()const;
@@ -231,6 +232,16 @@ inline bool ListADT<Type>::DeleteItem(const Type& Entry)
 		}
 	}
 	return false;
+}
+
+template<class Type>
+inline bool ListADT<Type>::peekFront(Type& frntEntry) const
+{
+	if (IsEmpty())
+		return false;
+	
+	frntEntry = Head->getItem();
+	return true;
 }
 
 template<class Type>
