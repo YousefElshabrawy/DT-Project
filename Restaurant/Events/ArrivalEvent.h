@@ -17,6 +17,7 @@ class ArrivalEvent: public Event
 	int ordersize;
 public:
 	ArrivalEvent(int eTime, int oID, ORD_TYPE oType);
+	ArrivalEvent(int eTime, int oID, ORD_TYPE oType, int arrivaltime, int money, int size);
 	ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty, int arrivaltime, int money, int size); //Added to Set The piriorty of the order
 	//Add more constructors if needed
 	

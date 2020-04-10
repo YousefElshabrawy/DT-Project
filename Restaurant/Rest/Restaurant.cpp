@@ -24,41 +24,67 @@ void Restaurant::RunSimulation()
 	pGUI = new GUI;
 	PROG_MODE	mode = pGUI->getGUIMode();
 
-	switch (mode)	//Add a function for each mode in next phases
+	switch (mode)	//The mode of displaying outputs
 	{
-	case MODE_INTR:
+
+
+	case MODE_INTR: //Interactive mode
+
 		Interactive_mode();
+
 		break;
-	case MODE_STEP:
+
+
+	case MODE_STEP: //Step by step mode 
+
 		Step_By_Step_mode();
+
 		break;
-	case MODE_SLNT:
+
+
+	case MODE_SLNT: //Silent Mode
+
 		break;
-	case MODE_DEMO:
+
+
+	case MODE_DEMO: //Demo mode
+
 		Simple_Simulator();
+
 		break;
 
 	};
 
 }
 
+//-----------------------------------------------------------------------------------------------------//
+//--------------------------Reading the inputs from textfile-------------------------------------------//
 void Restaurant::ReadInputs()
 {
+
 	ifstream InputFile;
-	InputFile.open("StepByStep.txt");
+	InputFile.open("StepByStep.txt"); //Opening the file (Notice that the file name is step by step "May be changed in next phases")
+
+	//------------------------------------> COOKS <--------------------------------------------//
+
+	// i - Reading the cooks parameters (Inputs)
+
+	InputFile >> Normal_C >> Vegan_C >> VIP_C; //Number of Normal Vegan and VIP Cooks
+
+	InputFile >> SN >> SG >> SV;  //Speed of Normal , Vegan , and VIP Cooks
+
+	InputFile >> BO >> BN >> BG >> BV; 
+	/*
+	 BO: the number of orders a cook must prepare before taking a break .
+	 BN: the break duration (in timesteps) for normal cooks .
+	 BG: the break duration for vegan ones .
+	 BV: the break duration for VIP cooks.
+	*/
 
 
+	// ii- Creating the cooks :
 
-	InputFile >> Normal_C >> Vegan_C >> VIP_C;
-
-	InputFile >> SN >> SG >> SV;
-
-
-
-	InputFile >> BO >> BN >> BG >> BV;
-
-	//Creating the cooks :
-	int CookID = 0;
+	int CookID = 0; //Intially the first cook ID
 
 
 	//VIP Cooks :
@@ -87,35 +113,59 @@ void Restaurant::ReadInputs()
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	InputFile >> AutoP;
+	InputFile >> AutoP; //Represent the number of timesteps after which an order is automatically promoted to VIP.
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	InputFile >> M;
+	//----------------------------> EVENTS <----------------------------------//
 
+	InputFile >> M; //Represents the number of events
+
+	//The following lines of code Reading events parameners and create the event and push then into the Queue of events
 	// Start of loop of number of events
 	for (int i = 0; i < M; i++)
 	{
-		char EVENT, TYP;
+		//Variables Decleration that will be used
+
+		char EVENT, TYP; 
 		int TS; //Type step
 		int ID; //is a unique sequence number that identifies each order.
 		int SIZE; //is the number of dishes of the order
 		int MONY; //is the total order money.
-		InputFile >> EVENT;
-		float Equation = 0;
-		switch (EVENT)
+
+
+		InputFile >> EVENT; //Reading the Event Type (VIP,Normal,Vegan)
+
+		float Equation = 0; //Priorty equation for VIP orders
+
+		switch (EVENT) //To check the Type of Event
 		{
-		case'R':
+
+		case'R': //Arraival Event 
+
 			////////////////////////////////////////////
-			InputFile >> TYP >> TS >> ID >> SIZE >> MONY;
-			Equation = MONY + (1000 / (float)TS) + SIZE;
+
+			/*
+
+			i- TYP is the order type (N: normal, G: vegan, V: VIP).
+		    ii- TS is the event timestep. (order arrival time) .
+			iii- ID is a unique sequence number that identifies each order. 
+			iv- SIZE is the number of dishes of the order .
+			v-  MONY is the total order money.
+
+			*/
+
+			InputFile >> TYP >> TS >> ID >> SIZE >> MONY; //Reading the inputs
+
+			
 			Event* pE;
 			switch (TYP)
 			{
 
 			case 'N':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_NRM, Equation, TS, MONY, SIZE);
+				pE = new ArrivalEvent(TS, ID, TYPE_NRM, TS, MONY, SIZE);
+				//pE = new ArrivalEvent(TS, ID, 0, TS, MONY, SIZE);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
 				break;
@@ -123,23 +173,26 @@ void Restaurant::ReadInputs()
 
 			case 'V':
 
+				Equation = MONY + (1000 / (float)TS) + SIZE; //The priorty equation of Piriorty VIP Queue
 				pE = new ArrivalEvent(TS, ID, TYPE_VIP, Equation, TS, MONY, SIZE);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
+
 				break;
 
 
 			case 'G':
 
-				pE = new ArrivalEvent(TS, ID, TYPE_VGAN, Equation, TS, MONY, SIZE);
+				pE = new ArrivalEvent(TS, ID, TYPE_VGAN, TS, MONY, SIZE);
 				EventsQueue.enqueue(pE);
 				pE = NULL;
+
 				break;
 
-
+			
 			default:
 				break;
-			}
+			} //End of Type of Order in Arrival Event
 
 			break;
 
@@ -148,10 +201,9 @@ void Restaurant::ReadInputs()
 			///////////////////////////////////////////////////
 
 
-		case 'X':
-			//TODO (DONE)
-				//Cancelation Pointer will be created and reading It's parameters
-			InputFile >> TS >> ID;
+		case 'X': //Cancelation Event
+			
+			InputFile >> TS >> ID; //the event timestep and the id of the order to be canceled. This ID must be of a Normal order.(Validation!)
 			pE = new CancelEvent(TS, ID);
 			EventsQueue.enqueue(pE);
 			pE = NULL;
@@ -160,10 +212,9 @@ void Restaurant::ReadInputs()
 
 			////////////////////////////////////////////////////////////////////
 
-		case 'P':
-			//TODO (DONE)
-			//Promotion poiter is to be created and reading it's parameters
-			InputFile >> TS >> ID >> ExMony;
+		case 'P': //Promotion Event 
+			
+			InputFile >> TS >> ID >> ExMony; //the event timestep and the id of the order to be promoted to VIP(MUST be Normal) , Extra money to be paid
 			pE = new PromotionEvent(TS, ID, ExMony);
 			EventsQueue.enqueue(pE);
 			pE = NULL;
@@ -171,17 +222,19 @@ void Restaurant::ReadInputs()
 			break;
 			//////////////////////////////////////////////////////////////
 
+		default :
+
+			break;
 
 		}
-
+		//End of Checking the Event : Arrival Promotion Cancelation
 
 	}
 	//End of loop of number of events .....
-
 	/////////////////////////////////////////////////////////////////////////////////
 }
 
-bool Restaurant::GetTesting() const
+bool Restaurant::GetTesting() const 
 {
 	return testing;
 }
@@ -215,7 +268,7 @@ Restaurant::~Restaurant()
 
 void Restaurant::FillDrawingList()
 {
-	//This function should be implemented in phase1
+
 	//It should add ALL orders and Cooks to the drawing list
 	//It should get orders from orders lists/queues/stacks/whatever (same for Cooks)
 	//To add orders it should call function  void GUI::AddToDrawingList(Order* pOrd);
@@ -223,9 +276,14 @@ void Restaurant::FillDrawingList()
 
 
 	Order* pOrd;
-	Cook** pCVIP_Array = VIP_Cooks.toArray(VIP_C);
-	Cook** pCNormal_Array = Normal_Cooks.toArray(Normal_C);
-	Cook** pCVegan_Array = Vegan_Cooks.toArray(Vegan_C);
+
+	//-------------------------> COOKS <--------------------------------------
+
+	//Convert to Arrays (Easy to Iterate on them)
+
+	Cook** pCVIP_Array = VIP_Cooks.toArray(VIP_C); //Array of Pointers to VIP Cooks
+	Cook** pCNormal_Array = Normal_Cooks.toArray(Normal_C); //Array of Pointers to Normal Cooks
+	Cook** pCVegan_Array = Vegan_Cooks.toArray(Vegan_C); ////Array of Pointers to Vegan Cooks
 
 	//add all Cooks to GUI::DrawingList
 	for (int i = 0; i < VIP_C; i++)
@@ -237,7 +295,10 @@ void Restaurant::FillDrawingList()
 	for (int i = 0; i < Vegan_C; i++)
 		pGUI->AddToDrawingList(pCVegan_Array[i]);
 
+	//---------------------------------> Orders <------------------------------------
 	//add all Ordes to GUI::DrawingList
+
+	//Getting Numbers of All Orders
 	int nomOf_VIP_Orders = VIP_Orders.GetSize();
 	int nomOf_Normal_Orders = Normal_Orders.GetSize();
 	int nomOf_Vegan_Orders = Vegan_Orders.GetSize();
@@ -251,6 +312,32 @@ void Restaurant::FillDrawingList()
 	Order** IN_Service_Array = In_Service_List.toArray(nomOf_IN_Service_Orders);
 	Order** Finished_Array = finished_List.toArray(nomOf_Finished_Orders);
 
+	////////////////////////////////////////////////////////////////////////////////
+	//Sorting VIP Orders :  This is by using Selection Sorting 
+
+	int i, j, min_index;
+
+	for (i = 0; i < nomOf_VIP_Orders - 1; i++)
+	{
+		// Find the minimum element in unsorted array 
+		min_index = i;
+		for (j = i + 1; j < nomOf_VIP_Orders; j++)
+			if (VIP_Orders_Array[j]->GetArrTime() < VIP_Orders_Array[min_index]->GetArrTime())
+				min_index = j;
+
+		//Then Swapping
+		swap(&VIP_Orders_Array[min_index], &VIP_Orders_Array[i]);
+
+	}
+
+	//End Sorting
+	//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+	////add all Orders to GUI::DrawingList
 	for (int i = 0; i < nomOf_VIP_Orders; i++)
 	{
 		pOrd = VIP_Orders_Array[i];
@@ -280,30 +367,37 @@ void Restaurant::FillDrawingList()
 		pOrd = Finished_Array[i];
 		pGUI->AddToDrawingList(pOrd);
 	}
+	////////////////////////////////////////////////////////////////////////////////////////////
 
+	//Updating the Interface to draw
 	pGUI->UpdateInterface();
 	Sleep(1000);
 	pGUI->ResetDrawingList();
 
 }
 
+
+//This Function to return an Order from the List to Use it in the Events
 Order* Restaurant::GetNormalOrderByID(int ID)
 {
 	return Normal_Orders.SearchByID(ID);
 }
 
+//To delete Normal Order from the List 
 void Restaurant::DeleteNormalOrder(Order* order)
 {
 	Normal_Orders.DeleteItem(order);
 }
 
+//////////////////////////////////////////////////////////////////////////
+
+//Adding to Data Structures
 void Restaurant::AddtoVIPQueue(Order* po, int Pir)
 {
 	VIP_Orders.enqueue(po, Pir);
 }
 void Restaurant::AddtoNormalQueue(Order* po)
 {
-	//Normal_Orders.enqueue(po);
 	Normal_Orders.pushEnd(po);
 }
 
@@ -331,10 +425,20 @@ void Restaurant::AddtoUnavailable_Cooks(Cook* CK)
 
 
 
-/// ==> end of DEMO-related function
 //////////////////////////////////////////////////////////////////////////////////////////////
+
+//---------------------------------> Projects Modes <--------------------------------------------
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+Interactive mode: 
+allows user to monitor the restaurant operation. At each time step, program should provide output similar to that in the figure.
+In this mode, program pauses for a user mouse click to display the output of the next timestep.
+*/
 void Restaurant::Interactive_mode()
 {
+
 	ReadInputs();
 
 	int CurrentTimeStep = 0;
@@ -369,21 +473,28 @@ void Restaurant::Interactive_mode()
 
 }
 
+
+/*
+Simple Simulator Is ONLY To Test phase 1 Code
+*/
 void Restaurant::Simple_Simulator()
 {
-	testing = true;
-	ReadInputs();
+	testing = true; //To check that it is only testing 
+
+	ReadInputs(); //Reading inputs from file
 
 	int CurrentTimeStep = 0;
-
+	
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
 	{
+		ExecuteEvents(CurrentTimeStep);
 		//print current timestep
-		char timestep[10];
-		itoa(CurrentTimeStep, timestep, 10);
-		pGUI->PrintMessage(timestep);
 
+		string Message1 = "TS :" + to_string(CurrentTimeStep);
+		string AvailableCooks = "Avaiable Cooks ---> Normal = "+ to_string(Normal_C) + " , VIP = "+ to_string(VIP_C)+" , Vegan = "+to_string(Vegan_C);
+		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
 		//execute all events at current time step
 		//should ignore promotion events 
 		ExecuteEvents(CurrentTimeStep);

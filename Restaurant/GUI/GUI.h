@@ -115,6 +115,7 @@ public:
 
 	// Output Functions  ---------------------------
 	void PrintMessage(string msg) const; // prints a message in the status bar
+	void PrintMessage(string msg1,string msg2,string msg3) const; // prints a message in the status bar
 
 
 	void UpdateInterface();

@@ -7,6 +7,14 @@ ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType):Event(eTime, oID)
 {
 	OrdType = oType;
 }
+ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType, int arrivaltime, int money, int size) : Event(eTime, oID)
+{
+	OrdType = oType;
+	this->ordarrivaltime = arrivaltime;
+	this->OrdMoney = money;
+	this->ordersize = size;
+}
+
 ArrivalEvent::ArrivalEvent(int eTime, int oID, ORD_TYPE oType, float Piriorty, int arrivaltime, int money, int size) : Event(eTime, oID)
 {
 	OrdType = oType;
