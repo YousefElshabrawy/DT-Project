@@ -7,12 +7,13 @@ GUI::GUI()
 	pWind = new window(WindWidth+15,WindHeight,0,0); 
 	pWind->ChangeTitle("The Restautant");
 
-
+	
 	//Set color for each order type
 	DrawingColors[TYPE_NRM] =  RED;	//normal-order color
 	DrawingColors[TYPE_VGAN] = DARKBLUE;		//vegan-order color
 	DrawingColors[TYPE_VIP] = 	VIOLET;		//VIP-order color					
-
+						
+	WelcomeImage();
 	ClearStatusBar();
 	ClearDrawingArea(); 
 	DrawRestArea();  
@@ -73,9 +74,9 @@ void GUI::PrintMessage(string msg1, string msg2, string msg3) const
 
 	pWind->SetPen(DARKRED);
 	pWind->SetFont(18, BOLD, BY_NAME, "Arial");
-	pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 1.5), msg1);
-	pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 2), msg2);
-	pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 3), msg3);
+	pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 1.2), msg1);
+	pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 1.5), msg2);
+	pWind->DrawString(10, WindHeight - (int)(StatusBarHeight / 2), msg3);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void GUI::DrawString(const int iX, const int iY, const string Text)
@@ -100,7 +101,8 @@ void GUI::ClearDrawingArea() const
 {
 	// Clearing the Drawing area
 	pWind->SetPen(KHAKI, 3);
-	pWind->SetBrush(KHAKI);
+	//pWind->SetBrush(KHAKI);
+	pWind->SetBrush(GREENYELLOW);
 	pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
 	//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
 
@@ -125,15 +127,9 @@ void GUI::DrawRestArea() const
 	pWind->DrawLine(WindWidth/2, YHalfDrawingArea - RestWidth/2, WindWidth/2, YHalfDrawingArea + RestWidth/2);
 	pWind->DrawLine(WindWidth/2 - RestWidth/2, YHalfDrawingArea, WindWidth/2 + RestWidth/2, YHalfDrawingArea);
 
-	// 4- Drawing the 4 white squares inside the Rest (one for each region)
-	/*pWind->SetPen(WHITE);
-	pWind->SetBrush(WHITE);
-	pWind->DrawRectangle(RestStartX , RestStartY , RestStartX + 2*L/2, RestStartY + 2*L/2);
-	pWind->DrawRectangle(RestStartX + L/3, RestEndY - L/3, RestStartX + 2*L/3, RestEndY - 2*L/3);
-	pWind->DrawRectangle(RestEndX - 2*L/3, RestStartY + L/3, RestEndX - L/3, RestStartY + 2*L/3);
-	pWind->DrawRectangle(RestEndX - 2*L/3, RestEndY - L/3, RestEndX - L/3, RestEndY - 2*L/3);*/
 
-	// 5- Writing regions labels
+
+	// 4- Writing regions labels
 	pWind->SetPen(WHITE);
 	pWind->SetFont(20, BOLD , BY_NAME, "Arial");
 	pWind->DrawString(RestStartX + (int)(0.1*L), RestStartY + 5*L/12, "WAIT");
@@ -223,7 +219,14 @@ void GUI::DrawAllItems()
 
 }
 
-void GUI::UpdateInterface() 
+void GUI::WelcomeImage()
+{
+	pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+	PrintMessage("Click Anywhere to Continue");
+	waitForClick();
+}
+
+void GUI::UpdateInterface()
 {
 	ClearDrawingArea();
 	DrawRestArea();

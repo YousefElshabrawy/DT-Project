@@ -117,7 +117,7 @@ public:
 	void PrintMessage(string msg) const; // prints a message in the status bar
 	void PrintMessage(string msg1,string msg2,string msg3) const; // prints a message in the status bar
 
-
+	void WelcomeImage();
 	void UpdateInterface();
 	void AddToDrawingList(Order* pOrd);	//Adds a new order to the drawing queue
 	void AddToDrawingList(Cook* pC);	//Adds a new cook to the drawing queue
