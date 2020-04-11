@@ -73,7 +73,7 @@ void Restaurant::ReadInputs()
 
 	InputFile >> SN >> SG >> SV;  //Speed of Normal , Vegan , and VIP Cooks
 
-	InputFile >> BO >> BN >> BG >> BV; 
+	InputFile >> BO >> BN >> BG >> BV;
 	/*
 	 BO: the number of orders a cook must prepare before taking a break .
 	 BN: the break duration (in timesteps) for normal cooks .
@@ -127,7 +127,7 @@ void Restaurant::ReadInputs()
 	{
 		//Variables Decleration that will be used
 
-		char EVENT, TYP; 
+		char EVENT, TYP;
 		int TS; //Type step
 		int ID; //is a unique sequence number that identifies each order.
 		int SIZE; //is the number of dishes of the order
@@ -148,8 +148,8 @@ void Restaurant::ReadInputs()
 			/*
 
 			i- TYP is the order type (N: normal, G: vegan, V: VIP).
-		    ii- TS is the event timestep. (order arrival time) .
-			iii- ID is a unique sequence number that identifies each order. 
+			ii- TS is the event timestep. (order arrival time) .
+			iii- ID is a unique sequence number that identifies each order.
 			iv- SIZE is the number of dishes of the order .
 			v-  MONY is the total order money.
 
@@ -157,7 +157,7 @@ void Restaurant::ReadInputs()
 
 			InputFile >> TYP >> TS >> ID >> SIZE >> MONY; //Reading the inputs
 
-			
+
 			Event* pE;
 			switch (TYP)
 			{
@@ -189,7 +189,7 @@ void Restaurant::ReadInputs()
 
 				break;
 
-			
+
 			default:
 				break;
 			} //End of Type of Order in Arrival Event
@@ -202,7 +202,7 @@ void Restaurant::ReadInputs()
 
 
 		case 'X': //Cancelation Event
-			
+
 			InputFile >> TS >> ID; //the event timestep and the id of the order to be canceled. This ID must be of a Normal order.(Validation!)
 			pE = new CancelEvent(TS, ID);
 			EventsQueue.enqueue(pE);
@@ -213,7 +213,7 @@ void Restaurant::ReadInputs()
 			////////////////////////////////////////////////////////////////////
 
 		case 'P': //Promotion Event 
-			
+
 			InputFile >> TS >> ID >> ExMony; //the event timestep and the id of the order to be promoted to VIP(MUST be Normal) , Extra money to be paid
 			pE = new PromotionEvent(TS, ID, ExMony);
 			EventsQueue.enqueue(pE);
@@ -222,7 +222,7 @@ void Restaurant::ReadInputs()
 			break;
 			//////////////////////////////////////////////////////////////
 
-		default :
+		default:
 
 			break;
 
@@ -234,7 +234,7 @@ void Restaurant::ReadInputs()
 	/////////////////////////////////////////////////////////////////////////////////
 }
 
-bool Restaurant::GetTesting() const 
+bool Restaurant::GetTesting() const
 {
 	return testing;
 }
@@ -432,7 +432,7 @@ void Restaurant::AddtoUnavailable_Cooks(Cook* CK)
 
 
 /*
-Interactive mode: 
+Interactive mode:
 allows user to monitor the restaurant operation. At each time step, program should provide output similar to that in the figure.
 In this mode, program pauses for a user mouse click to display the output of the next timestep.
 */
@@ -484,17 +484,10 @@ void Restaurant::Simple_Simulator()
 	ReadInputs(); //Reading inputs from file
 
 	int CurrentTimeStep = 0;
-	
+
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
 	{
-		ExecuteEvents(CurrentTimeStep);
-		//print current timestep
-
-		string Message1 = "TS :" + to_string(CurrentTimeStep);
-		string AvailableCooks = "Avaiable Cooks ---> Normal = "+ to_string(Normal_C) + " , VIP = "+ to_string(VIP_C)+" , Vegan = "+to_string(Vegan_C);
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
-		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
 		//execute all events at current time step
 		//should ignore promotion events 
 		ExecuteEvents(CurrentTimeStep);
@@ -512,15 +505,14 @@ void Restaurant::Simple_Simulator()
 			}
 		}
 
-		int nomOf_Normal_Orders = Normal_Orders.GetSize();
-		Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
-		if (!Normal_Orders.IsEmpty())
+		if (Normal_Orders.peekFront(ORD))
 		{
-			if (Normal_Orders_Array[0]->GetArrTime() != CurrentTimeStep)
+			if (ORD->GetArrTime() != CurrentTimeStep)
 			{
-				Normal_Orders_Array[0]->setStatus(SRV);
-				AddtoInServiceList(Normal_Orders_Array[0]);
-				Normal_Orders.pop(Normal_Orders_Array[0]);
+				ORD->setStatus(SRV);
+				AddtoInServiceList(ORD);
+				Normal_Orders.DeleteItem(ORD);
+				ORD = NULL;
 			}
 		}
 
@@ -569,6 +561,13 @@ void Restaurant::Simple_Simulator()
 			}
 		}
 
+		//print current timestep
+
+		string Message1 = "TS :" + to_string(CurrentTimeStep);
+		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_C) + " , VIP = " + to_string(VIP_C) + " , Vegan = " + to_string(Vegan_C);
+		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
+
 		//add all current ordes & cooks to GUI
 		FillDrawingList();
 
@@ -591,11 +590,6 @@ void Restaurant::Step_By_Step_mode()
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
 	{
-		//print current timestep
-		char timestep[10];
-		itoa(CurrentTimeStep, timestep, 10);
-		pGUI->PrintMessage(timestep);
-
 		//execute all events at current time step
 		ExecuteEvents(CurrentTimeStep);
 
@@ -621,6 +615,15 @@ void Restaurant::Step_By_Step_mode()
 			Normal_Cooks.DeleteItem(NORMAL_Cooks_Array[i]);
 		}
 
+		int VEGAN_num = Vegan_Cooks.GetSize();
+		Cook** VEGAN_Cooks_Array = Vegan_Cooks.toArray(VEGAN_num);
+		for (int i = 0; i < VEGAN_num && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() != 0 && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() % VEGAN_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0; i++)
+		{
+			VEGAN_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + VEGAN_Cooks_Array[i]->GetBreakDuration());
+			AddtoUnavailable_Cooks(VEGAN_Cooks_Array[i]);
+			Vegan_Cooks.DeleteItem(VEGAN_Cooks_Array[i]);
+		}
+
 		int numofunavailblecooks = Unavailable_Cooks.GetSize();
 		Cook** Unavailable_Cooks_Array = Unavailable_Cooks.toArray(numofunavailblecooks);
 		for (int i = 0; i < numofunavailblecooks; i++)
@@ -644,15 +647,6 @@ void Restaurant::Step_By_Step_mode()
 				}
 				Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
 			}
-		}
-
-		int VEGAN_num = Vegan_Cooks.GetSize();
-		Cook** VEGAN_Cooks_Array = Vegan_Cooks.toArray(VEGAN_num);
-		for (int i = 0; i < VEGAN_num && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() != 0 && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() % VEGAN_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0; i++)
-		{
-			VEGAN_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + VEGAN_Cooks_Array[i]->GetBreakDuration());
-			AddtoUnavailable_Cooks(VEGAN_Cooks_Array[i]);
-			Vegan_Cooks.DeleteItem(VEGAN_Cooks_Array[i]);
 		}
 
 		//assign orders to in-service
@@ -738,6 +732,13 @@ void Restaurant::Step_By_Step_mode()
 				}
 			}
 		}
+
+		//print current timestep
+
+		string Message1 = "TS :" + to_string(CurrentTimeStep);
+		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
+		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
 
 		//add all current ordes & cooks to GUI
 		FillDrawingList();

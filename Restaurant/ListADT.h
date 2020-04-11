@@ -132,6 +132,10 @@ inline Type ListADT<Type>::SearchByID(int ID)
 		{
 			PrevNode->setNext(CurrentNode->getNext());
 			Value = CurrentNode->getItem();
+			if (CurrentNode == End)
+			{
+				End = PrevNode;
+			}
 			delete CurrentNode;
 			CurrentNode = nullptr;
 			size--;
