@@ -463,7 +463,7 @@ void Restaurant::Interactive_mode()
 {
 
 	ReadInputs();
-	//pGUI->PrintBackGrounds();
+	pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 
@@ -611,7 +611,7 @@ void Restaurant::Step_By_Step_mode()
 {
 	ReadInputs();
 
-	//pGUI->PrintBackGrounds();
+	pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 

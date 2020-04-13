@@ -34,7 +34,6 @@ class GUI
 private:
 	window *pWind;
 	color DrawingColors[TYPE_CNT];
-	int ignoreclearing;  //ignore first clear drawing area for reading input
 
 	//The four regions in the GUI window: 
 
@@ -104,9 +103,6 @@ private:
 
 	void ClearStatusBar() const;    // clears the status bar
 	void ClearDrawingArea() const;	// clears the Drawing area from all drawings
-
-	void increaseignoreclearing();
-
 public:
 	GUI();
 	~GUI();
