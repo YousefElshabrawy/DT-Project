@@ -397,7 +397,6 @@ void Restaurant::FillDrawingList()
 	pGUI->UpdateInterface();
 	Sleep(1000);
 	pGUI->ResetDrawingList();
-
 }
 
 
@@ -464,6 +463,7 @@ void Restaurant::Interactive_mode()
 {
 
 	ReadInputs();
+	//pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 
@@ -506,6 +506,8 @@ void Restaurant::Simple_Simulator()
 	testing = true; //To check that it is only testing 
 
 	ReadInputs(); //Reading inputs from file
+
+	//pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 
@@ -608,6 +610,8 @@ void Restaurant::Simple_Simulator()
 void Restaurant::Step_By_Step_mode()
 {
 	ReadInputs();
+
+	//pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 
@@ -771,7 +775,7 @@ void Restaurant::Step_By_Step_mode()
 		CurrentTimeStep++;	//advance timestep
 	}
 
-	Order* ORD;
+	/*Order* ORD;
 	cout << "ID\tAT\n";
 	while (finished_List.peekFront(ORD))
 	{
@@ -779,7 +783,7 @@ void Restaurant::Step_By_Step_mode()
 		finished_List.DeleteItem(ORD);
 	}
 	cout << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
-	cout << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+	cout << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";*/
 
 	pGUI->DrawImage("ExitImage");
 	pGUI->PrintMessage("generation done, click to END program");

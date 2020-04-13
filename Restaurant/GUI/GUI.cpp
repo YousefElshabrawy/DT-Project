@@ -11,6 +11,7 @@ GUI::GUI()
 	pWind = new window(WindWidth+15,WindHeight,0,0); 
 	pWind->ChangeTitle("The Restautant");
 
+	ignoreclearing = 1;
 	
 	//Set color for each order type
 	DrawingColors[TYPE_NRM] =  RED;	//normal-order color
@@ -19,9 +20,9 @@ GUI::GUI()
 						
 	WelcomeImage();
 	ClearStatusBar();
-	ClearDrawingArea(); 
-	DrawRestArea();  
-	
+	//PrintBackGrounds();
+	ClearDrawingArea();
+	DrawRestArea();
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 GUI::~GUI()
@@ -102,15 +103,40 @@ void GUI::ClearStatusBar() const
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void GUI::ClearDrawingArea() const
-{
-	// Clearing the Drawing area
+{// Clearing the Drawing area
 	//pWind->SetPen(KHAKI, 3);
-	pWind->SetPen(BLACK, 3);
-	//pWind->SetBrush(KHAKI);
-	pWind->SetBrush(IVORY);
-	pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
-	//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
 
+	if (ignoreclearing)
+	{
+		pWind->SetPen(BLACK, 3);
+		//pWind->SetBrush(KHAKI);
+		pWind->SetBrush(IVORY);
+		pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
+		//pWind->DrawImage("square1.jpg", 0, 0, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+		//pWind->DrawImage("square2.jpg", 600, 0, WindWidth/2, (WindHeight - StatusBarHeight)/2);
+		//pWind->DrawImage("square3.jpg", 600, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+		//pWind->DrawImage("square4.jpg", 0, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+
+		//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+	}
+	else
+	{
+		//increaseignoreclearing();
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////
+void GUI::increaseignoreclearing()
+{
+	ignoreclearing++;
+}
+///////////////////////////////////////////////////////////////////////////////////
+void GUI::PrintBackGrounds()
+{
+	pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
+	pWind->DrawImage("square1.jpg", 0, 0, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+	pWind->DrawImage("square2.jpg", 600, 0, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+	pWind->DrawImage("square3.jpg", 600, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+	pWind->DrawImage("square4.jpg", 0, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void GUI::DrawRestArea() const
@@ -202,8 +228,10 @@ void GUI::DrawSingleItem(const DrawingItem* pDitem, int RegionCount) const      
 
 	// Drawing the item
 	pWind->SetPen(pDitem->clr);
-	pWind->SetFont(20,BOLD, MODERN);
-	pWind->DrawInteger(x,y,pDitem->ID);
+	pWind->SetBrush(IVORY);
+	pWind->DrawRectangle(x - 3, y + 1, x + 23, y + 20);
+	pWind->SetFont(20, BOLD, MODERN);
+	pWind->DrawInteger(x, y, pDitem->ID);
 }
 
 
@@ -301,14 +329,7 @@ void GUI::ResetDrawingList()
 	DrawingItemsCount = 0;
 }
 
- 
 
-
-void GUI::CatSound()
-{
-	mciSendString("open \"*.mp3\" type Cat alias mp3", NULL, 0, NULL);
-	mciSendString("play mp3", NULL, 0, NULL);
-}
 
 PROG_MODE	GUI::getGUIMode() const
 {
