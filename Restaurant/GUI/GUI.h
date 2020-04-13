@@ -118,10 +118,12 @@ public:
 	void PrintMessage(string msg1,string msg2,string msg3) const; // prints a message in the status bar
 
 	void WelcomeImage();
+	void DrawImage(string Path);
 	void UpdateInterface();
 	void AddToDrawingList(Order* pOrd);	//Adds a new order to the drawing queue
 	void AddToDrawingList(Cook* pC);	//Adds a new cook to the drawing queue
 	void ResetDrawingList();		//resets drawing list (should be called every timestep after drawing)
+
 
 	PROG_MODE getGUIMode() const;			//returns the mode of the program
 

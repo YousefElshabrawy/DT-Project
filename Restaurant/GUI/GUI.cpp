@@ -1,5 +1,9 @@
 #include "GUI.h"
 
+#include <Mmsystem.h>
+#include <mciapi.h>
+//these two headers are already included in the <Windows.h> header
+#pragma comment(lib, "Winmm.lib")
 //////////////////////////////////////////////////////////////////////////////////////////
 GUI::GUI()
 {
@@ -233,6 +237,12 @@ void GUI::WelcomeImage()
 	waitForClick();
 }
 
+void GUI::DrawImage(string Path)
+{
+	Path = Path+".jpg";
+	pWind->DrawImage(Path, 0, 0, WindWidth, WindHeight - StatusBarHeight);
+}
+
 void GUI::UpdateInterface()
 {
 	ClearDrawingArea();
@@ -294,12 +304,22 @@ void GUI::ResetDrawingList()
  
 
 
+void GUI::CatSound()
+{
+	mciSendString("open \"*.mp3\" type Cat alias mp3", NULL, 0, NULL);
+	mciSendString("play mp3", NULL, 0, NULL);
+}
+
 PROG_MODE	GUI::getGUIMode() const
 {
 	PROG_MODE Mode;
 	do
 	{
-		PrintMessage("Please select GUI mode: (1)Interactive, (2)StepByStep, (3)Silent, (4)Simple Simulator... ");
+		pWind->DrawImage("Selection0.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+		Sleep(200);
+		pWind->DrawImage("Selection.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+		PrintMessage("Your Choice : ");
+		//PrintMessage("Please select GUI mode: (1)Interactive, (2)StepByStep, (3)Silent, (4)Simple Simulator... ");
 		string S = GetString();
 		Mode = (PROG_MODE) (atoi(S.c_str())-1);
 	}

@@ -64,6 +64,7 @@ void Restaurant::ReadInputs()
 	
 	ifstream InputFile;
 	do {
+		pGUI->DrawImage("TextfileImage");
 		pGUI->PrintMessage("Enter the file name without .txt :");
 		string FileName = pGUI->GetString();
 
@@ -73,14 +74,18 @@ void Restaurant::ReadInputs()
 
 		if (InputFile.is_open() == false)
 		{
-			pGUI->PrintMessage("The file name is not exsist , please try again, Please press anywhere to continue");
+			//pGUI->PrintMessage("The file name is not exsist , please try again, Please press anywhere to continue");
+			pGUI->DrawImage("FileNotFound");
+			pGUI->PrintMessage("Please press anywhere to continue");
 			pGUI->waitForClick();
 			pGUI->PrintMessage(" ");
 		}
 
 		} while (InputFile.is_open() == false);
 
-		pGUI->PrintMessage("File Is Opened Successfully! , Please press anywhere to continue");
+		//pGUI->PrintMessage("File Is Opened Successfully! , Please press anywhere to continue");
+		pGUI->PrintMessage("Please press anywhere to continue");
+		pGUI->DrawImage("FileFound");
 		pGUI->waitForClick();
 		pGUI->PrintMessage(" ");
 
@@ -776,6 +781,7 @@ void Restaurant::Step_By_Step_mode()
 	cout << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
 	cout << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
 
+	pGUI->DrawImage("ExitImage");
 	pGUI->PrintMessage("generation done, click to END program");
 	pGUI->waitForClick();
 }
