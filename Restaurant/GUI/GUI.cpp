@@ -111,11 +111,11 @@ void GUI::ClearDrawingArea() const
 		pWind->SetPen(BLACK, 3);
 		//pWind->SetBrush(KHAKI);
 		pWind->SetBrush(IVORY);
-		pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
-		//pWind->DrawImage("square1.jpg", 0, 0, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
-		//pWind->DrawImage("square2.jpg", 600, 0, WindWidth/2, (WindHeight - StatusBarHeight)/2);
-		//pWind->DrawImage("square3.jpg", 600, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
-		//pWind->DrawImage("square4.jpg", 0, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+		//pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
+		pWind->DrawImage("square1.jpg", 0, 0, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+		pWind->DrawImage("square2.jpg", 600, 0, WindWidth/2, (WindHeight - StatusBarHeight)/2);
+		pWind->DrawImage("square3.jpg", 600, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+		pWind->DrawImage("square4.jpg", 0, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
 
 		//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
 	}
