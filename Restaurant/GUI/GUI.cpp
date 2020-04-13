@@ -93,16 +93,17 @@ void GUI::ClearStatusBar() const
 	pWind->SetBrush(WHITE);
 	pWind->DrawRectangle(0, WindHeight - StatusBarHeight , WindWidth, WindHeight);	
 
-	pWind->SetPen(BROWN, 3);
+	pWind->SetPen(BLACK, 3);
 	pWind->DrawLine(0, WindHeight - StatusBarHeight , WindWidth, WindHeight - StatusBarHeight);	
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void GUI::ClearDrawingArea() const
 {
 	// Clearing the Drawing area
-	pWind->SetPen(KHAKI, 3);
+	//pWind->SetPen(KHAKI, 3);
+	pWind->SetPen(BLACK, 3);
 	//pWind->SetBrush(KHAKI);
-	pWind->SetBrush(GREENYELLOW);
+	pWind->SetBrush(IVORY);
 	pWind->DrawRectangle(0, MenuBarHeight, WindWidth, WindHeight - StatusBarHeight);
 	//pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
 
@@ -112,13 +113,15 @@ void GUI::DrawRestArea() const
 {
 	int L = RestWidth / 2;
 
-	// 1- Drawing the brown square of the Rest
-	pWind->SetPen(BROWN);
-	pWind->SetBrush(BROWN);
+	// 1- Drawing the BLACK square of the Rest
+	pWind->SetPen(WHITE);
+	//pWind->SetBrush(BROWN);
+	pWind->SetBrush(BLACK);
 	pWind->DrawRectangle(RestStartX, RestStartY, RestEndX, RestEndY);
 
-	// 2- Drawing the 2 brown crossed lines (for making 4 regions)
-	pWind->SetPen(BROWN, 3);
+	// 2- Drawing the 2 BLACK crossed lines (for making 4 regions)
+	pWind->SetPen(BLACK, 3);
+	pWind->SetPen(BLACK, 3);
 	pWind->DrawLine(0, YHalfDrawingArea, WindWidth, YHalfDrawingArea);
 	pWind->DrawLine(WindWidth/2, MenuBarHeight, WindWidth/2, WindHeight-StatusBarHeight);
 
@@ -221,6 +224,10 @@ void GUI::DrawAllItems()
 
 void GUI::WelcomeImage()
 {
+	pWind->DrawImage("preprojectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+	Sleep(300);
+	pWind->DrawImage("projectimageII.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
+	Sleep(300);
 	pWind->DrawImage("projectimage.jpg", 0, 0, WindWidth, WindHeight - StatusBarHeight);
 	PrintMessage("Click Anywhere to Continue");
 	waitForClick();

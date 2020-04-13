@@ -61,9 +61,28 @@ void Restaurant::RunSimulation()
 //--------------------------Reading the inputs from textfile-------------------------------------------//
 void Restaurant::ReadInputs()
 {
-
+	
 	ifstream InputFile;
-	InputFile.open("StepByStep.txt"); //Opening the file (Notice that the file name is step by step "May be changed in next phases")
+	do {
+		pGUI->PrintMessage("Enter the file name without .txt :");
+		string FileName = pGUI->GetString();
+
+		FileName = FileName + ".txt";
+
+		InputFile.open(FileName); //Opening the file (Notice that the file name is step by step "May be changed in next phases")
+
+		if (InputFile.is_open() == false)
+		{
+			pGUI->PrintMessage("The file name is not exsist , please try again, Please press anywhere to continue");
+			pGUI->waitForClick();
+			pGUI->PrintMessage(" ");
+		}
+
+		} while (InputFile.is_open() == false);
+
+		pGUI->PrintMessage("File Is Opened Successfully! , Please press anywhere to continue");
+		pGUI->waitForClick();
+		pGUI->PrintMessage(" ");
 
 	//------------------------------------> COOKS <--------------------------------------------//
 
