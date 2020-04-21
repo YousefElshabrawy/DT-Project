@@ -713,29 +713,38 @@ void Restaurant::Step_By_Step_mode()
 		//check for all cooks one after one if they serviced enough orders to have a break 
 		int VIP_num = VIP_Cooks.GetSize();
 		Cook** VIP_Cooks_Array = VIP_Cooks.toArray(VIP_num);
-		for (int i = 0; i < VIP_num && VIP_Cooks_Array[i]->GetNumOfServedOrders() != 0 && VIP_Cooks_Array[i]->GetNumOfServedOrders() % VIP_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0; i++)
+		for (int i = 0; i < VIP_num; i++)
 		{
-			VIP_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + VIP_Cooks_Array[i]->GetBreakDuration());
-			AddtoUnavailable_Cooks(VIP_Cooks_Array[i]);
-			VIP_Cooks.DeleteItem(VIP_Cooks_Array[i]);
+			if (VIP_Cooks_Array[i]->GetNumOfServedOrders() != 0 && VIP_Cooks_Array[i]->GetNumOfServedOrders() % VIP_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0)
+			{
+				VIP_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + VIP_Cooks_Array[i]->GetBreakDuration());
+				AddtoUnavailable_Cooks(VIP_Cooks_Array[i]);
+				VIP_Cooks.DeleteItem(VIP_Cooks_Array[i]);
+			}
 		}
 
 		int NORMAL_num = Normal_Cooks.GetSize();
 		Cook** NORMAL_Cooks_Array = Normal_Cooks.toArray(NORMAL_num);
-		for (int i = 0; i < NORMAL_num && NORMAL_Cooks_Array[i]->GetNumOfServedOrders() != 0 && NORMAL_Cooks_Array[i]->GetNumOfServedOrders() % NORMAL_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0; i++)
+		for (int i = 0; i < NORMAL_num; i++)
 		{
-			NORMAL_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + NORMAL_Cooks_Array[i]->GetBreakDuration());
-			AddtoUnavailable_Cooks(NORMAL_Cooks_Array[i]);
-			Normal_Cooks.DeleteItem(NORMAL_Cooks_Array[i]);
+			if (NORMAL_Cooks_Array[i]->GetNumOfServedOrders() != 0 && NORMAL_Cooks_Array[i]->GetNumOfServedOrders() % NORMAL_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0)
+			{
+				NORMAL_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + NORMAL_Cooks_Array[i]->GetBreakDuration());
+				AddtoUnavailable_Cooks(NORMAL_Cooks_Array[i]);
+				Normal_Cooks.DeleteItem(NORMAL_Cooks_Array[i]);
+			}
 		}
 
 		int VEGAN_num = Vegan_Cooks.GetSize();
 		Cook** VEGAN_Cooks_Array = Vegan_Cooks.toArray(VEGAN_num);
-		for (int i = 0; i < VEGAN_num && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() != 0 && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() % VEGAN_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0; i++)
+		for (int i = 0; i < VEGAN_num; i++)
 		{
-			VEGAN_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + VEGAN_Cooks_Array[i]->GetBreakDuration());
-			AddtoUnavailable_Cooks(VEGAN_Cooks_Array[i]);
-			Vegan_Cooks.DeleteItem(VEGAN_Cooks_Array[i]);
+			if (VEGAN_Cooks_Array[i]->GetNumOfServedOrders() != 0 && VEGAN_Cooks_Array[i]->GetNumOfServedOrders() % VEGAN_Cooks_Array[i]->GetNumber_Of_Orders_Before_Break() == 0)
+			{
+				VEGAN_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + VEGAN_Cooks_Array[i]->GetBreakDuration());
+				AddtoUnavailable_Cooks(VEGAN_Cooks_Array[i]);
+				Vegan_Cooks.DeleteItem(VEGAN_Cooks_Array[i]);
+			}
 		}
 
 		int numofunavailblecooks = Unavailable_Cooks.GetSize();
@@ -781,17 +790,32 @@ void Restaurant::Step_By_Step_mode()
 			COK = NULL;
 		}
 
-		while (Normal_Orders.peekFront(ORD) && Normal_Cooks.peekFront(COK))
+		while (VIP_Orders.peekFront(ORD) && Normal_Cooks.peekFront(COK))
 		{
 			ORD->setStatus(SRV);
 			AddtoInServiceList(ORD);
-			Normal_Orders.DeleteItem(ORD);
+			VIP_Orders.dequeue(ORD);
 
 			COK->SetCooking(true);
 			COK->SetOrderForServing(ORD);
 			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 			AddtoUnavailable_Cooks(COK);
 			Normal_Cooks.DeleteItem(COK);
+			ORD = NULL;
+			COK = NULL;
+		}
+
+		while (VIP_Orders.peekFront(ORD) && Vegan_Cooks.peekFront(COK))
+		{
+			ORD->setStatus(SRV);
+			AddtoInServiceList(ORD);
+			VIP_Orders.dequeue(ORD);
+
+			COK->SetCooking(true);
+			COK->SetOrderForServing(ORD);
+			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+			AddtoUnavailable_Cooks(COK);
+			Vegan_Cooks.DeleteItem(COK);
 			ORD = NULL;
 			COK = NULL;
 		}
@@ -810,6 +834,38 @@ void Restaurant::Step_By_Step_mode()
 			ORD = NULL;
 			COK = NULL;
 		}
+
+		while (Normal_Orders.peekFront(ORD) && Normal_Cooks.peekFront(COK))
+		{
+			ORD->setStatus(SRV);
+			AddtoInServiceList(ORD);
+			Normal_Orders.DeleteItem(ORD);
+
+			COK->SetCooking(true);
+			COK->SetOrderForServing(ORD);
+			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+			AddtoUnavailable_Cooks(COK);
+			Normal_Cooks.DeleteItem(COK);
+			ORD = NULL;
+			COK = NULL;
+		}
+
+		while (Normal_Orders.peekFront(ORD) && VIP_Cooks.peekFront(COK))
+		{
+			ORD->setStatus(SRV);
+			AddtoInServiceList(ORD);
+			Normal_Orders.DeleteItem(ORD);
+
+			COK->SetCooking(true);
+			COK->SetOrderForServing(ORD);
+			COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+			AddtoUnavailable_Cooks(COK);
+			VIP_Cooks.DeleteItem(COK);
+			ORD = NULL;
+			COK = NULL;
+		}
+
+
 
 		//move finished orders from In-service list to finished list
 		numofunavailblecooks = Unavailable_Cooks.GetSize();

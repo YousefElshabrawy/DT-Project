@@ -57,7 +57,7 @@ bool Cook::GetCooking() const
 
 Order* Cook::GetServingOrder() const
 {
-	return OrderServing;
+	return *OrderServing;
 }
 
 int Cook::GetTimeTODeliver() const
@@ -113,7 +113,8 @@ void Cook::SetCooking(bool assign)
 
 void Cook::SetOrderForServing(Order* ord)
 {
-	OrderServing = ord;
+	OrderServing = new Order*;
+	*OrderServing = ord;
 }
 
 void Cook::SetTimeTODeliver(int time)

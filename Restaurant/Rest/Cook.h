@@ -12,7 +12,7 @@ class Cook
 	int Break_Duration;
 	int Number_Orders_BeforeBreak;
 	bool cooking;  //identicate if the cook is available or not
-	Order* OrderServing;  //identicate the order that cook is cooking
+	Order** OrderServing;  //identicate the order that cook is cooking
 	int TimeTODeliver;
 	int numofServedorders;
 	int TimeBackWork;
