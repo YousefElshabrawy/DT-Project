@@ -61,7 +61,7 @@ void Restaurant::RunSimulation()
 //--------------------------Reading the inputs from textfile-------------------------------------------//
 void Restaurant::ReadInputs()
 {
-	
+
 	ifstream InputFile;
 	do {
 		pGUI->DrawImage("TextfileImage");
@@ -81,13 +81,13 @@ void Restaurant::ReadInputs()
 			pGUI->PrintMessage(" ");
 		}
 
-		} while (InputFile.is_open() == false);
+	} while (InputFile.is_open() == false);
 
-		//pGUI->PrintMessage("File Is Opened Successfully! , Please press anywhere to continue");
-		pGUI->PrintMessage("Please press anywhere to continue");
-		pGUI->DrawImage("FileFound");
-		pGUI->waitForClick();
-		pGUI->PrintMessage(" ");
+	//pGUI->PrintMessage("File Is Opened Successfully! , Please press anywhere to continue");
+	pGUI->PrintMessage("Please press anywhere to continue");
+	pGUI->DrawImage("FileFound");
+	pGUI->waitForClick();
+	pGUI->PrintMessage(" ");
 
 	//------------------------------------> COOKS <--------------------------------------------//
 
@@ -333,6 +333,7 @@ void Restaurant::FillDrawingList()
 	Order** VIP_Orders_Array = VIP_Orders.ToArray(nomOf_VIP_Orders);
 	Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
 	Order** Vegan_Orders_Array = Vegan_Orders.toArray(nomOf_Vegan_Orders);
+	Order** Waiting_List = new Order * [nomOf_VIP_Orders + nomOf_Normal_Orders + nomOf_Vegan_Orders];
 	Order** IN_Service_Array = In_Service_List.toArray(nomOf_IN_Service_Orders);
 	Order** Finished_Array = finished_List.toArray(nomOf_Finished_Orders);
 
@@ -350,8 +351,94 @@ void Restaurant::FillDrawingList()
 				min_index = j;
 
 		//Then Swapping
-		swap(&VIP_Orders_Array[min_index], &VIP_Orders_Array[i]);
+		//swap(&VIP_Orders_Array[min_index], &VIP_Orders_Array[i]);
 
+		Order* Temp = VIP_Orders_Array[min_index];
+		VIP_Orders_Array[min_index] = VIP_Orders_Array[i];
+		VIP_Orders_Array[i] = Temp;
+
+	}
+
+	//End Sorting
+	//////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////////
+	//Sorting all orders
+
+	//sort num of orders for each type min1 is the minimum of them, min3 is the largest of them
+	//int min1, min2, min3;
+	//if (nomOf_Normal_Orders < nomOf_VIP_Orders)
+	//{
+	//	min1 = nomOf_Normal_Orders;
+	//	min2 = nomOf_VIP_Orders;
+	//}
+	//else
+	//{
+	//	min2 = nomOf_Normal_Orders;
+	//	min1 = nomOf_VIP_Orders;
+	//}
+	//if (nomOf_Vegan_Orders < min1)
+	//{
+	//	min3 = min2;
+	//	min2 = min1;
+	//	min1 = nomOf_Vegan_Orders;
+	//}
+	//else
+	//{
+	//	if (nomOf_Vegan_Orders < min2)
+	//	{
+	//		min3 = min2;
+	//		min2 = nomOf_Vegan_Orders;
+	//	}
+	//	else
+	//	{
+	//		min3 = nomOf_Vegan_Orders;
+	//	}
+	//}
+
+	int VIPindex = 0, Normalindex = 0, Veganindex = 0, waitingindex = 0;
+	bool continuelooping = true;
+	for (int i = 0; continuelooping; i++)
+	{
+		bool condition1 = (VIPindex != nomOf_VIP_Orders);
+		bool condition2 = (Normalindex != nomOf_Normal_Orders);
+		bool condition3 = (Veganindex != nomOf_Vegan_Orders);
+
+
+		if (condition1)
+		{
+			while (VIPindex != nomOf_VIP_Orders&&VIP_Orders_Array[VIPindex]->GetArrTime() == i)
+			{
+				Waiting_List[waitingindex] = VIP_Orders_Array[VIPindex];
+				VIPindex += 1;
+				waitingindex += 1;
+			}
+		}
+
+		if (condition2)
+		{
+			while (Normalindex != nomOf_Normal_Orders&&Normal_Orders_Array[Normalindex]->GetArrTime() == i)
+			{
+				Waiting_List[waitingindex] = Normal_Orders_Array[Normalindex];
+				Normalindex += 1;
+				waitingindex += 1;
+			}
+		}
+
+		if (condition3)
+		{
+			while (Veganindex != nomOf_Vegan_Orders&&Vegan_Orders_Array[Veganindex]->GetArrTime() == i)
+			{
+				Waiting_List[waitingindex] = Vegan_Orders_Array[Veganindex];
+				Veganindex += 1;
+				waitingindex += 1;
+			}
+		}
+
+		if (!condition1 && !condition2 && !condition3)
+		{
+			continuelooping = false;
+		}
 	}
 
 	//End Sorting
@@ -359,26 +446,30 @@ void Restaurant::FillDrawingList()
 
 
 
-
-
 	////add all Orders to GUI::DrawingList
-	for (int i = 0; i < nomOf_VIP_Orders; i++)
+	for (int i = 0; i < nomOf_VIP_Orders + nomOf_Normal_Orders + nomOf_Vegan_Orders; i++)
 	{
-		pOrd = VIP_Orders_Array[i];
+		pOrd = Waiting_List[i];
 		pGUI->AddToDrawingList(pOrd);
 	}
 
-	for (int i = 0; i < nomOf_Normal_Orders; i++)
-	{
-		pOrd = Normal_Orders_Array[i];
-		pGUI->AddToDrawingList(pOrd);
-	}
+	//for (int i = 0; i < nomOf_VIP_Orders; i++)
+	//{
+	//	pOrd = VIP_Orders_Array[i];
+	//	pGUI->AddToDrawingList(pOrd);
+	//}
 
-	for (int i = 0; i < nomOf_Vegan_Orders; i++)
-	{
-		pOrd = Vegan_Orders_Array[i];
-		pGUI->AddToDrawingList(pOrd);
-	}
+	//for (int i = 0; i < nomOf_Normal_Orders; i++)
+	//{
+	//	pOrd = Normal_Orders_Array[i];
+	//	pGUI->AddToDrawingList(pOrd);
+	//}
+
+	//for (int i = 0; i < nomOf_Vegan_Orders; i++)
+	//{
+	//	pOrd = Vegan_Orders_Array[i];
+	//	pGUI->AddToDrawingList(pOrd);
+	//}
 
 	for (int i = 0; i < nomOf_IN_Service_Orders; i++)
 	{
@@ -463,7 +554,6 @@ void Restaurant::Interactive_mode()
 {
 
 	ReadInputs();
-	pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 
@@ -506,8 +596,6 @@ void Restaurant::Simple_Simulator()
 	testing = true; //To check that it is only testing 
 
 	ReadInputs(); //Reading inputs from file
-
-	//pGUI->PrintBackGrounds();
 
 	int CurrentTimeStep = 0;
 
@@ -610,9 +698,7 @@ void Restaurant::Simple_Simulator()
 void Restaurant::Step_By_Step_mode()
 {
 	ReadInputs();
-
 	pGUI->PrintBackGrounds();
-
 	int CurrentTimeStep = 0;
 
 	//as long as events queue or in service orders are not empty yet

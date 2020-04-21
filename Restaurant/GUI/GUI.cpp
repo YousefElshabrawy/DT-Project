@@ -121,6 +121,7 @@ void GUI::PrintBackGrounds()
 	pWind->DrawImage("square2.jpg", 600, 0, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
 	pWind->DrawImage("square3.jpg", 600, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
 	pWind->DrawImage("square4.jpg", 0, (WindHeight - StatusBarHeight) / 2, WindWidth / 2, (WindHeight - StatusBarHeight) / 2);
+	DrawRestArea();
 }
 ///////////////////////////////////////////////////////////////////////////////////
 void GUI::DrawRestArea() const
