@@ -27,7 +27,13 @@ public:
 
 	int GetID();
 	int GetArrTime();
+	int GetFinishTime();
+	int GetServTime();
 	int GetSize();
+	int GetWaitTime();
+
+	void SetFinishTime(int time);
+	void SetServTime(int time);
 
 	void SetType(ORD_TYPE newtype);
 	ORD_TYPE GetType() const;

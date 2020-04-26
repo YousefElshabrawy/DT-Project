@@ -24,9 +24,34 @@ int Order::GetArrTime()
 	return ArrTime;
 }
 
+int Order::GetFinishTime()
+{
+	return FinishTime;
+}
+
+int Order::GetServTime()
+{
+	return ServTime;
+}
+
 int Order::GetSize()
 {
 	return size;
+}
+
+int Order::GetWaitTime()
+{
+	return (FinishTime - ArrTime - ServTime);
+}
+
+void Order::SetFinishTime(int time)
+{
+	FinishTime = time;
+}
+
+void Order::SetServTime(int time)
+{
+	ServTime = time;
 }
 
 

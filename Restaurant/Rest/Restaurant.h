@@ -98,6 +98,7 @@ public:
 	void Interactive_mode();	
 	void Simple_Simulator();
 	void Step_By_Step_mode();
+	void Silent_Mode();
 
 
 
