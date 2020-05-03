@@ -629,6 +629,21 @@ void Restaurant::Interactive_mode()
 				Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
 			}
 		}
+		// auto promote the normal orders to VIP ones 
+		int NoOfNormalOrders = Normal_Orders.GetSize();
+		int NoOfPromotedOrders = 0;
+		Order** NORMAL_Orders_Array = Normal_Orders.toArray(NoOfNormalOrders);
+		for (int i = 0; i < NoOfNormalOrders; i++)
+		{
+			if (CurrentTimeStep-NORMAL_Orders_Array[i]->GetArrTime()>= AutoP)
+			{
+				NoOfPromotedOrders++;
+				NORMAL_Orders_Array[i]->SetType(TYPE_VIP);
+				int Equation = NORMAL_Orders_Array[i]->GettotalMoney() + (1000 / (float)NORMAL_Orders_Array[i]->GetArrTime()) + NORMAL_Orders_Array[i]->GetSize();
+				AddtoVIPQueue(NORMAL_Orders_Array[i], -1); // -1 Is an indication that it is added to the end of the queue as the priorties are all postitive	
+				Normal_Orders.DeleteItem(NORMAL_Orders_Array[i]);
+		 	}
+		}
 
 		//assign orders to in-service
 
@@ -981,7 +996,21 @@ void Restaurant::Step_By_Step_mode()
 				Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
 			}
 		}
-
+		// auto promote the normal orders to VIP ones 
+		int NoOfNormalOrders = Normal_Orders.GetSize();
+		int NoOfPromotedOrders = 0;
+		Order** NORMAL_Orders_Array = Normal_Orders.toArray(NoOfNormalOrders);
+		for (int i = 0; i < NoOfNormalOrders; i++)
+		{
+			if (CurrentTimeStep - NORMAL_Orders_Array[i]->GetArrTime() >= AutoP)
+			{
+				NoOfPromotedOrders++;
+				NORMAL_Orders_Array[i]->SetType(TYPE_VIP);
+				int Equation = NORMAL_Orders_Array[i]->GettotalMoney() + (1000 / (float)NORMAL_Orders_Array[i]->GetArrTime()) + NORMAL_Orders_Array[i]->GetSize();
+				AddtoVIPQueue(NORMAL_Orders_Array[i], -1); // -1 Is an indication that it is added to the end of the queue as the priorties are all postitive	
+				Normal_Orders.DeleteItem(NORMAL_Orders_Array[i]);
+			}
+		}
 		//assign orders to in-service
 
 
@@ -1226,7 +1255,21 @@ void Restaurant::Silent_Mode()
 				Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
 			}
 		}
-
+		// auto promote the normal orders to VIP ones 
+		int NoOfNormalOrders = Normal_Orders.GetSize();
+		int NoOfPromotedOrders = 0;
+		Order** NORMAL_Orders_Array = Normal_Orders.toArray(NoOfNormalOrders);
+		for (int i = 0; i < NoOfNormalOrders; i++)
+		{
+			if (CurrentTimeStep - NORMAL_Orders_Array[i]->GetArrTime() >= AutoP)
+			{
+				NoOfPromotedOrders++;
+				NORMAL_Orders_Array[i]->SetType(TYPE_VIP);
+				int Equation = NORMAL_Orders_Array[i]->GettotalMoney() + (1000 / (float)NORMAL_Orders_Array[i]->GetArrTime()) + NORMAL_Orders_Array[i]->GetSize();
+				AddtoVIPQueue(NORMAL_Orders_Array[i], -1); // -1 Is an indication that it is added to the end of the queue as the priorties are all postitive	
+				Normal_Orders.DeleteItem(NORMAL_Orders_Array[i]);
+			}
+		}
 		//assign orders to in-service
 
 
