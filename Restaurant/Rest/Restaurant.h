@@ -34,15 +34,17 @@ private:
 	/// ===================    Inputs from file   ================= 
 
 	int Normal_C, Vegan_C, VIP_C; //For Number of cooks of each type
-	int SN, SG, SV; //Normal cook speed, Vegan cook speed and VIP cook speed
-	int BO, BN, BG, BV; 
+	int SN_min,SN_max, SG_min,SG_max, SV_min, SV_max; //Normal cook speed, Vegan cook speed and VIP cook speed
+	int BO, BN_min, BN_max, BG_min,BG_max , BV_min ,BV_max;
+	float InjProp;
+	int RstPrd;
 	/*
 	BO: the number of orders a cook must prepare before taking a break
 	BN: the break duration (in timesteps) for normal cooks
 	BG: the break duration for vegan ones
 	BV: the break duration for VIP cooks.
 	*/
-	int AutoP; //that represent the number of timesteps after which an order is automatically promoted to VIP.
+	int AutoP,VIP_WT; //that represent the number of timesteps after which an order is automatically promoted to VIP.
 	int M; //Number of events 
 	int ExMony; //the extra money the customer paid for promotion
 
