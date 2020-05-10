@@ -27,6 +27,7 @@ private:
 	ListADT<Cook*> Normal_Cooks;
 	PiriorityQueue<Order*> VIP_Orders;
 	Queue<Order*> Vegan_Orders;
+	Queue<Order*> Urgent_Orders;
 	//Queue<Order*> Normal_Orders;
 	ListADT<Order*>Normal_Orders;
 	ListADT<Order*>In_Service_List;
@@ -93,6 +94,9 @@ public:
 	void AddtoInServiceList(Order* po);
 	void ADDtoFinishedList(Order* po);
 	void AddtoUnavailable_Cooks(Cook* CK);
+	void AddtoUrgentQueue(Order* po);
+
+
 
 
 /// ===================    Interactive mode-related functions.    ================= 

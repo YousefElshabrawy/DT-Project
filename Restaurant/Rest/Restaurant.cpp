@@ -537,7 +537,10 @@ void Restaurant::AddtoUnavailable_Cooks(Cook* CK)
 	Unavailable_Cooks.pushEnd(CK);
 }
 
-
+void Restaurant::AddtoUrgentQueue(Order* po)
+{
+	Urgent_Orders.enqueue(po);
+}
 
 
 
@@ -644,7 +647,17 @@ void Restaurant::Interactive_mode()
 				Normal_Orders.DeleteItem(NORMAL_Orders_Array[i]);
 		 	}
 		}
-
+		// searching for hte urgent orders
+		int NoOfVIPOrders = VIP_Orders.GetSize();
+		Order** VIP_Orders_Array = VIP_Orders.toArray(NoOfVIPOrders);
+		for (int i = 0; i < NoOfVIPOrders; i++)
+		{
+			if (CurrentTimeStep - VIP_Orders_Array[i]->GetArrTime() >= VIP_WT)
+			{
+				AddtoUrgentQueue(VIP_Orders_Array[i]);
+				VIP_Orders.DeleteItem(VIP_Orders_Array[i]);
+			}
+		}
 		//assign orders to in-service
 
 
