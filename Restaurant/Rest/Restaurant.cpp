@@ -1184,6 +1184,9 @@ void Restaurant::Silent_Mode()
 	ReadInputs();
 	//pGUI->PrintBackGrounds();
 	int CurrentTimeStep = 0;
+	double TotalWaitTime = 0;
+	double TotalServTime = 0;
+	int NoOfPromotedOrders = 0;
 
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
@@ -1257,7 +1260,6 @@ void Restaurant::Silent_Mode()
 		}
 		// auto promote the normal orders to VIP ones 
 		int NoOfNormalOrders = Normal_Orders.GetSize();
-		int NoOfPromotedOrders = 0;
 		Order** NORMAL_Orders_Array = Normal_Orders.toArray(NoOfNormalOrders);
 		for (int i = 0; i < NoOfNormalOrders; i++)
 		{
@@ -1270,6 +1272,7 @@ void Restaurant::Silent_Mode()
 				Normal_Orders.DeleteItem(NORMAL_Orders_Array[i]);
 			}
 		}
+
 		//assign orders to in-service
 
 
@@ -1421,6 +1424,7 @@ void Restaurant::Silent_Mode()
 		//pGUI->waitForClick();
 		CurrentTimeStep++;	//advance timestep
 	}
+	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
 
 	ofstream Outputfile;
 	Outputfile.open("Output.txt");
@@ -1428,11 +1432,15 @@ void Restaurant::Silent_Mode()
 	Outputfile << "FT\tID\tAT\tWT\tST\n";
 	while (finished_List.peekFront(ORD))
 	{
+		TotalWaitTime += ORD->GetWaitTime();
+		TotalServTime += ORD->GetServTime();
 		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
 		finished_List.DeleteItem(ORD);
 	}
 	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
 	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+	Outputfile << "Avg Wait = " << TotalWaitTime/ NumOfTotalOrders << ", Avg Serv = " << TotalServTime/ NumOfTotalOrders << "\n";
+	Outputfile << "Auto-promoted: " << (NoOfPromotedOrders / NumOfDeliveredNORMALOrders) * 100;
 	Outputfile.close();
 
 	pGUI->DrawImage("ExitImage");
