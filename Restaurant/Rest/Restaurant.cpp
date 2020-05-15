@@ -97,15 +97,17 @@ void Restaurant::ReadInputs()
 
 	InputFile >> Normal_C >> Vegan_C >> VIP_C; //Number of Normal Vegan and VIP Cooks
 
-	InputFile >> SN >> SG >> SV;  //Speed of Normal , Vegan , and VIP Cooks
+	InputFile >> SN_min >> SN_max >> SG_min >> SG_max >> SV_min >> SV_max;  //Speed of Normal , Vegan , and VIP Cooks
 
-	InputFile >> BO >> BN >> BG >> BV;
+	InputFile >> BO >> BN_min >> BN_max >> BG_min >> BG_max >> BV_min >> BV_max;
 	/*
 	 BO: the number of orders a cook must prepare before taking a break .
 	 BN: the break duration (in timesteps) for normal cooks .
 	 BG: the break duration for vegan ones .
 	 BV: the break duration for VIP cooks.
 	*/
+
+	InputFile >> InjProp >> RstPrd;
 
 
 	// ii- Creating the cooks :
@@ -117,7 +119,7 @@ void Restaurant::ReadInputs()
 
 	for (int i = 0; i < VIP_C; i++)
 	{
-		Cook* Cook_ptr = new Cook(CookID++, TYPE_VIP, SV, BV, BO);
+		Cook* Cook_ptr = new Cook(CookID++, TYPE_VIP, SV_max, SV_min, BV_max, BV_min, BO);
 		VIP_Cooks.pushEnd(Cook_ptr);
 	}
 
@@ -125,7 +127,7 @@ void Restaurant::ReadInputs()
 
 	for (int i = 0; i < Normal_C; i++)
 	{
-		Cook* Cook_ptr = new Cook(CookID++, TYPE_NRM, SN, BN, BO);
+		Cook* Cook_ptr = new Cook(CookID++, TYPE_NRM, SN_max, SN_min, BN_max, BN_min, BO);
 		Normal_Cooks.pushEnd(Cook_ptr);
 	}
 
@@ -133,13 +135,13 @@ void Restaurant::ReadInputs()
 
 	for (int i = 0; i < Vegan_C; i++)
 	{
-		Cook* Cook_ptr = new Cook(CookID++, TYPE_VGAN, SG, BG, BO);
+		Cook* Cook_ptr = new Cook(CookID++, TYPE_VGAN, SG_max, SG_min, BG_max, BG_min, BO);
 		Vegan_Cooks.pushEnd(Cook_ptr);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	InputFile >> AutoP; //Represent the number of timesteps after which an order is automatically promoted to VIP.
+	InputFile >> AutoP >> VIP_WT; //Represent the number of timesteps after which an order is automatically promoted to VIP.
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -648,16 +650,16 @@ void Restaurant::Interactive_mode()
 		 	}
 		}
 		// searching for hte urgent orders
-		int NoOfVIPOrders = VIP_Orders.GetSize();
-		Order** VIP_Orders_Array = VIP_Orders.toArray(NoOfVIPOrders);
-		for (int i = 0; i < NoOfVIPOrders; i++)
-		{
-			if (CurrentTimeStep - VIP_Orders_Array[i]->GetArrTime() >= VIP_WT)
-			{
-				AddtoUrgentQueue(VIP_Orders_Array[i]);
-				VIP_Orders.DeleteItem(VIP_Orders_Array[i]);
-			}
-		}
+		//int NoOfVIPOrders = VIP_Orders.GetSize();
+		//Order** VIP_Orders_Array = VIP_Orders.toArray(NoOfVIPOrders);
+		//for (int i = 0; i < NoOfVIPOrders; i++)
+		//{
+		//	if (CurrentTimeStep - VIP_Orders_Array[i]->GetArrTime() >= VIP_WT)
+		//	{
+		//		AddtoUrgentQueue(VIP_Orders_Array[i]);
+		//		VIP_Orders.DeleteItem(VIP_Orders_Array[i]);
+		//	}
+		//}
 		//assign orders to in-service
 
 
@@ -938,6 +940,9 @@ void Restaurant::Step_By_Step_mode()
 	ReadInputs();
 	pGUI->PrintBackGrounds();
 	int CurrentTimeStep = 0;
+	double TotalWaitTime = 0;
+	double TotalServTime = 0;
+	int NoOfPromotedOrders = 0;
 
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
@@ -1011,7 +1016,6 @@ void Restaurant::Step_By_Step_mode()
 		}
 		// auto promote the normal orders to VIP ones 
 		int NoOfNormalOrders = Normal_Orders.GetSize();
-		int NoOfPromotedOrders = 0;
 		Order** NORMAL_Orders_Array = Normal_Orders.toArray(NoOfNormalOrders);
 		for (int i = 0; i < NoOfNormalOrders; i++)
 		{
@@ -1176,16 +1180,23 @@ void Restaurant::Step_By_Step_mode()
 		CurrentTimeStep++;	//advance timestep
 	}
 
-	/*Order* ORD;
-	cout << "FT\tID\tAT\tWT\tST\n";
+	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
+	ofstream Outputfile;
+	Outputfile.open("Output.txt");
+	Order* ORD;
+	Outputfile << "FT\tID\tAT\tWT\tST\n";
 	while (finished_List.peekFront(ORD))
 	{
-		cout << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
+		TotalWaitTime += ORD->GetWaitTime();
+		TotalServTime += ORD->GetServTime();
+		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
 		finished_List.DeleteItem(ORD);
 	}
-	cout << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
-	cout << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";*/
-
+	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
+	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
+	Outputfile << "Auto-promoted: " << (NoOfPromotedOrders / NumOfDeliveredNORMALOrders) * 100;
+	Outputfile.close();
 
 	pGUI->DrawImage("ExitImage");
 	pGUI->PrintMessage("generation done, click to END program");
@@ -1197,6 +1208,9 @@ void Restaurant::Silent_Mode()
 	ReadInputs();
 	//pGUI->PrintBackGrounds();
 	int CurrentTimeStep = 0;
+	double TotalWaitTime = 0;
+	double TotalServTime = 0;
+	int NoOfPromotedOrders = 0;
 
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
@@ -1268,9 +1282,11 @@ void Restaurant::Silent_Mode()
 				Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
 			}
 		}
+
+
+
 		// auto promote the normal orders to VIP ones 
 		int NoOfNormalOrders = Normal_Orders.GetSize();
-		int NoOfPromotedOrders = 0;
 		Order** NORMAL_Orders_Array = Normal_Orders.toArray(NoOfNormalOrders);
 		for (int i = 0; i < NoOfNormalOrders; i++)
 		{
@@ -1283,6 +1299,9 @@ void Restaurant::Silent_Mode()
 				Normal_Orders.DeleteItem(NORMAL_Orders_Array[i]);
 			}
 		}
+
+
+
 		//assign orders to in-service
 
 
@@ -1435,17 +1454,22 @@ void Restaurant::Silent_Mode()
 		CurrentTimeStep++;	//advance timestep
 	}
 
+	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
 	ofstream Outputfile;
 	Outputfile.open("Output.txt");
 	Order* ORD;
 	Outputfile << "FT\tID\tAT\tWT\tST\n";
 	while (finished_List.peekFront(ORD))
 	{
+		TotalWaitTime += ORD->GetWaitTime();
+		TotalServTime += ORD->GetServTime();
 		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
 		finished_List.DeleteItem(ORD);
 	}
 	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
 	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
+	Outputfile << "Auto-promoted: " << (NoOfPromotedOrders / NumOfDeliveredNORMALOrders) * 100;
 	Outputfile.close();
 
 	pGUI->DrawImage("ExitImage");

@@ -5,12 +5,34 @@ Cook::Cook()
 {
 }
 
-Cook::Cook(int ID, ORD_TYPE oT, int Speed, int BreakDuration, int NumberBeforeBreak)
+Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_min, int NumberBeforeBreak)
 {
 	this->ID = ID;
 	type = oT;
-	speed = Speed;
-	Break_Duration = BreakDuration;
+
+	srand(time(0));
+	int randomSpeed;
+	randomSpeed = (rand() % Max_Speed) + Min_Speed;
+	if (randomSpeed> Max_Speed)
+	{
+		speed = Max_Speed;
+	}
+	else
+	{
+		speed = randomSpeed;
+	}
+	srand(time(0));
+	int randomBreak;
+	randomBreak = (rand() % B_max) + B_min;
+	if (randomBreak > B_max)
+	{
+		Break_Duration = B_max;
+	}
+	else
+	{
+		Break_Duration = randomBreak;
+	}
+
 	Number_Orders_BeforeBreak = NumberBeforeBreak;
 	cooking = false;
 	TimeTODeliver = 0;

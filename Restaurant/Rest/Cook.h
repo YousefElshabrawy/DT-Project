@@ -2,7 +2,9 @@
 
 #include "..\Defs.h"
 #include "Order.h"
-
+#include <cstdlib>
+#include <stdlib.h> 
+#include<time.h> 
 #pragma once
 class Cook
 {
@@ -20,7 +22,7 @@ class Cook
 	
 public:
 	Cook();
-	Cook(int ID, ORD_TYPE oT, int Speed, int BreakDuration, int NumberBeforeBreak);
+	Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_min, int NumberBeforeBreak);
 	virtual ~Cook();
 	
 	int GetID() const;
