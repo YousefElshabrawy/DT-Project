@@ -14,7 +14,7 @@ GUI::GUI()
 	//Set color for each order type
 	DrawingColors[TYPE_NRM] = RED;	//normal-order color
 	DrawingColors[TYPE_VGAN] = DARKBLUE;		//vegan-order color
-	DrawingColors[TYPE_VIP] = VIOLET;		//VIP-order color					
+	DrawingColors[TYPE_VIP] = VIOLET;		//VIP-order color			
 
 	WelcomeImage();
 	ClearStatusBar();

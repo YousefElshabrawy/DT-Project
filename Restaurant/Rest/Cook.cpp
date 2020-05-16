@@ -1,6 +1,7 @@
 #include "Cook.h"
 
 
+
 Cook::Cook()
 {
 }
@@ -10,7 +11,7 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	this->ID = ID;
 	type = oT;
 
-	srand(time(0));
+	srand((int)time(NULL));
 	int randomSpeed;
 	randomSpeed = (rand() % Max_Speed) + Min_Speed;
 	if (randomSpeed> Max_Speed)
@@ -21,7 +22,7 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	{
 		speed = randomSpeed;
 	}
-	srand(time(0));
+	srand((int)time(NULL));
 	int randomBreak;
 	randomBreak = (rand() % B_max) + B_min;
 	if (randomBreak > B_max)
@@ -32,6 +33,7 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	{
 		Break_Duration = randomBreak;
 	}
+	//_sleep(1000);
 
 	Number_Orders_BeforeBreak = NumberBeforeBreak;
 	cooking = false;
@@ -101,7 +103,6 @@ int Cook::Getnomoftakenbreaks() const
 {
 	return nomoftakenbreaks;
 }
-
 
 void Cook::setID(int id)
 {

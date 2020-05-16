@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <stdlib.h> 
 #include<time.h> 
+
 #pragma once
 class Cook
 {

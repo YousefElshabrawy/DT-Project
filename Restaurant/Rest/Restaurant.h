@@ -27,7 +27,7 @@ private:
 	ListADT<Cook*> Normal_Cooks;
 	PiriorityQueue<Order*> VIP_Orders;
 	Queue<Order*> Vegan_Orders;
-	Queue<Order*> Urgent_Orders;
+	Queue<Order**> UrgentOrders;
 	//Queue<Order*> Normal_Orders;
 	ListADT<Order*>Normal_Orders;
 	ListADT<Order*>In_Service_List;
@@ -55,6 +55,16 @@ private:
 	int NumOfDeliveredVIPOrders;
 	int NumOfDeliveredNORMALOrders;
 	int NumOfDeliveredVEGANOrders;
+	int SharedBTVIPandURG;
+	double TotalWaitTime;
+	double TotalServTime;
+	float NoOfPromotedOrders;
+	int NoOfPromotedOrders_VIP;
+	int NumOfRecivedNORMALOrders;
+	int NumOfRecivedVIPOrders;
+	Order* ORD;
+	Cook* COK;
+	Order** UrgentOrder = new Order*;
 	
 	
 	
@@ -80,6 +90,10 @@ public:
 	bool GetTesting()const;
 
 	void FillDrawingList();
+	void GivesBreaks(int Time);
+	void AutoPromotion(int time);
+	void AssignOrders(int time);
+	void DeliverOrders(int time);
 
 	//
 	// TODO: Add More Member Functions As Needed

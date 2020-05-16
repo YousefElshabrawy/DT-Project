@@ -15,7 +15,9 @@ protected:
 	double totalMoney;	//Total order money
 
 	int ArrTime, ServTime, FinishTime;	//arrival, service start, and finish times
-	
+	bool IsUrgent;  //only for VIP Orders
+	bool WasNormal;  ////only for Normal Orders
+
 	
 	//
 	// TODO: Add More Data Members As Needed
@@ -31,6 +33,9 @@ public:
 	int GetServTime();
 	int GetSize();
 	int GetWaitTime();
+	bool GetIsUrgent()const;
+	void setIsUrgent(bool val);
+	bool GetWasNormal();
 
 	void SetFinishTime(int time);
 	void SetServTime(int time);

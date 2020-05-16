@@ -4,10 +4,19 @@ Order::Order(int id, ORD_TYPE r_Type, int AT, double cost, int sizeoforder)
 {
 	ID = (id>0&&id<1000)?id:0;	//1<ID<999
 	type = r_Type;
+	if (type==TYPE_NRM)
+	{
+		WasNormal = true;
+	}
+	else
+	{
+		WasNormal = false;
+	}
 	status = WAIT;
 	ArrTime = AT;
 	totalMoney = cost;
 	size = sizeoforder;
+	IsUrgent = false;
 }
 
 Order::~Order()
@@ -42,6 +51,21 @@ int Order::GetSize()
 int Order::GetWaitTime()
 {
 	return (FinishTime - ArrTime - ServTime);
+}
+
+bool Order::GetIsUrgent() const
+{
+	return  IsUrgent;
+}
+
+void Order::setIsUrgent(bool val)
+{
+	IsUrgent = val;
+}
+
+bool Order::GetWasNormal()
+{
+	return WasNormal;
 }
 
 void Order::SetFinishTime(int time)
