@@ -22,6 +22,7 @@ private:
 	Queue<Event*> EventsQueue;	//Queue of all events that will be loaded from file
 
 	ListADT<Cook*> Unavailable_Cooks;
+	ListADT<Cook*> Cooknig_Cooks;
 	ListADT<Cook*> VIP_Cooks;
 	ListADT<Cook*> Vegan_Cooks;
 	ListADT<Cook*> Normal_Cooks;
@@ -108,6 +109,7 @@ public:
 	void AddtoInServiceList(Order* po);
 	void ADDtoFinishedList(Order* po);
 	void AddtoUnavailable_Cooks(Cook* CK);
+	void AddtoCooknig_Cooks(Cook* CK);
 	void AddtoUrgentQueue(Order* po);
 
 
