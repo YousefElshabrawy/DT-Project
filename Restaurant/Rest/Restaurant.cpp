@@ -1,7 +1,4 @@
-#include <cstdlib>
-#include <time.h>
-#include <iostream>
-using namespace std;
+
 
 #include "Restaurant.h"
 #include "..\Events\ArrivalEvent.h"
@@ -867,10 +864,32 @@ void Restaurant::AssignOrders(int time)
 
 void Restaurant::DeliverOrders(int time)
 {
+	//Gnerating R
+	srand((unsigned int)time);
+	float R = ((float)rand() / (RAND_MAX))*100;
+	if (R>1)
+	{
+		R--;
+	}
+
 	int CurrentTimeStep = time;
+
 	//move finished orders from In-service list to finished list
 	int numofcookingcooks = Cooknig_Cooks.GetSize();
 	Cook** Cooknig_Cooks_Array = Cooknig_Cooks.toArray(numofcookingcooks);
+	if (R < InjProp)
+	{
+		for (int i = 0; i < numofcookingcooks; i++)
+		{
+			if (!Cooknig_Cooks_Array[i]->GetIsInjured())
+			{
+				Cooknig_Cooks_Array[i]->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()- COK->GetSpeed()) / COK->GetSpeed()/2));
+				Cooknig_Cooks_Array[i]->WorkInjury();
+				//CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed())
+
+			}
+		}
+	}
 	for (int i = 0; i < numofcookingcooks; i++)
 	{
 		if (Cooknig_Cooks_Array[i]->GetCooking())

@@ -20,6 +20,8 @@ class Cook
 	int numofServedorders;
 	int TimeBackWork;
 	int nomoftakenbreaks;
+	bool IsInjured;
+	int subspeed;
 	
 public:
 	Cook();
@@ -37,6 +39,7 @@ public:
 	int GetTimeBackWork()const;
 	int GetNumOfServedOrders()const;
 	int Getnomoftakenbreaks()const;
+	bool GetIsInjured()const;
 
 	void setID(int);
 	void setType(ORD_TYPE) ;
@@ -51,4 +54,5 @@ public:
 	void ServedOrder();
 	void ResetNumOfServedOrders();
 	void takebreak();
+	void WorkInjury();
 };

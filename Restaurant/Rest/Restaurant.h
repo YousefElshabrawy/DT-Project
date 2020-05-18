@@ -12,6 +12,9 @@
 #include "Cook.h"
 #include <istream>
 #include <ostream>
+//#include <cstdlib>
+#include <time.h>
+#include <stdlib.h> 
 using namespace std;
 // it is the maestro of the project
 class Restaurant  

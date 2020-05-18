@@ -11,9 +11,10 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	this->ID = ID;
 	type = oT;
 
-	srand((int)time(NULL));
+	srand((unsigned int)time(NULL));
 	int randomSpeed;
-	randomSpeed = (rand() % Max_Speed) + Min_Speed;
+	int ranom = rand() % Max_Speed;
+	randomSpeed = (ranom) + Min_Speed;
 	if (randomSpeed> Max_Speed)
 	{
 		speed = Max_Speed;
@@ -22,9 +23,11 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	{
 		speed = randomSpeed;
 	}
-	srand((int)time(NULL));
+	subspeed = speed;
+	srand((unsigned int)time(NULL));
 	int randomBreak;
-	randomBreak = (rand() % B_max) + B_min;
+	ranom = rand() % B_max;
+	randomBreak = (ranom) + B_min;
 	if (randomBreak > B_max)
 	{
 		Break_Duration = B_max;
@@ -40,6 +43,7 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	TimeTODeliver = 0;
 	OrderServing = nullptr;
 	numofServedorders = 0;
+	IsInjured = false;
 }
 
 
@@ -104,6 +108,11 @@ int Cook::Getnomoftakenbreaks() const
 	return nomoftakenbreaks;
 }
 
+bool Cook::GetIsInjured() const
+{
+	return IsInjured;
+}
+
 void Cook::setID(int id)
 {
 	ID = id;
@@ -163,6 +172,12 @@ void Cook::ResetNumOfServedOrders()
 void Cook::takebreak()
 {
 	nomoftakenbreaks++;
+}
+
+void Cook::WorkInjury()
+{
+	IsInjured = true;
+	speed /= 2;
 }
 
 
