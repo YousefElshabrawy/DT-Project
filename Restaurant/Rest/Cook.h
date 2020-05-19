@@ -55,4 +55,5 @@ public:
 	void ResetNumOfServedOrders();
 	void takebreak();
 	void WorkInjury();
+	void Recovery();
 };

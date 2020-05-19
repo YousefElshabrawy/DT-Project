@@ -24,11 +24,13 @@ private:
 	bool testing;
 	Queue<Event*> EventsQueue;	//Queue of all events that will be loaded from file
 
+	ListADT<Cook*> Injured_Cooks;
 	ListADT<Cook*> Unavailable_Cooks;
 	ListADT<Cook*> Cooknig_Cooks;
 	ListADT<Cook*> VIP_Cooks;
 	ListADT<Cook*> Vegan_Cooks;
 	ListADT<Cook*> Normal_Cooks;
+
 	PiriorityQueue<Order*> VIP_Orders;
 	Queue<Order*> Vegan_Orders;
 	Queue<Order**> UrgentOrders;

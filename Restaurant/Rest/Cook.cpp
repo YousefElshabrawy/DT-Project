@@ -180,5 +180,11 @@ void Cook::WorkInjury()
 	speed /= 2;
 }
 
+void Cook::Recovery()
+{
+	IsInjured = false;
+	speed = subspeed;
+}
+
 
 

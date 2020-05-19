@@ -15,10 +15,10 @@ Restaurant::Restaurant()
 	NumOfDeliveredNORMALOrders = 0;
 	NumOfDeliveredVEGANOrders = 0;
 	SharedBTVIPandURG = 0;
-	 TotalWaitTime = 0;
-	 TotalServTime = 0;
-	 NoOfPromotedOrders = 0;
-	 NoOfPromotedOrders_VIP = 0;
+	TotalWaitTime = 0;
+	TotalServTime = 0;
+	NoOfPromotedOrders = 0;
+	NoOfPromotedOrders_VIP = 0;
 }
 
 void Restaurant::RunSimulation()
@@ -566,19 +566,53 @@ void Restaurant::GivesBreaks(int Time)
 			if (Unavailable_Cooks_Array[i]->GetType() == TYPE_VIP)
 			{
 				Unavailable_Cooks_Array[i]->ResetNumOfServedOrders();
+				Unavailable_Cooks_Array[i]->SetTimeBackWork(0);
 				VIP_Cooks.pushEnd(Unavailable_Cooks_Array[i]);
 			}
 			else if (Unavailable_Cooks_Array[i]->GetType() == TYPE_NRM)
 			{
 				Unavailable_Cooks_Array[i]->ResetNumOfServedOrders();
+				Unavailable_Cooks_Array[i]->SetTimeBackWork(0);
 				Normal_Cooks.pushEnd(Unavailable_Cooks_Array[i]);
 			}
 			else
 			{
 				Unavailable_Cooks_Array[i]->ResetNumOfServedOrders();
+				Unavailable_Cooks_Array[i]->SetTimeBackWork(0);
 				Vegan_Cooks.pushEnd(Unavailable_Cooks_Array[i]);
 			}
 			Unavailable_Cooks.DeleteItem(Unavailable_Cooks_Array[i]);
+		}
+	}
+
+	int numofinjuredcooks = Injured_Cooks.GetSize();
+	Cook** Injured_Cooks_Array = Injured_Cooks.toArray(numofinjuredcooks);
+	for (int i = 0; i < numofinjuredcooks; i++)
+	{
+		if (Injured_Cooks_Array[i]->GetTimeBackWork() == CurrentTimeStep)
+		{
+			if (Injured_Cooks_Array[i]->GetType() == TYPE_VIP)
+			{
+				Injured_Cooks_Array[i]->ResetNumOfServedOrders();
+				Injured_Cooks_Array[i]->SetTimeBackWork(0);
+				Injured_Cooks_Array[i]->Recovery();
+				VIP_Cooks.pushEnd(Injured_Cooks_Array[i]);
+			}
+			else if (Injured_Cooks_Array[i]->GetType() == TYPE_NRM)
+			{
+				Injured_Cooks_Array[i]->ResetNumOfServedOrders();
+				Injured_Cooks_Array[i]->SetTimeBackWork(0);
+				Injured_Cooks_Array[i]->Recovery();
+				Normal_Cooks.pushEnd(Injured_Cooks_Array[i]);
+			}
+			else
+			{
+				Injured_Cooks_Array[i]->ResetNumOfServedOrders();
+				Injured_Cooks_Array[i]->SetTimeBackWork(0);
+				Injured_Cooks_Array[i]->Recovery();
+				Vegan_Cooks.pushEnd(Injured_Cooks_Array[i]);
+			}
+			Injured_Cooks.DeleteItem(Injured_Cooks_Array[i]);
 		}
 	}
 }
@@ -732,6 +766,25 @@ void Restaurant::AssignOrders(int time)
 		UrgentOrder = NULL;
 	}
 
+	while (UrgentOrders.peekFront(UrgentOrder) && Injured_Cooks.peekFront(COK))
+	{
+		ORD = *UrgentOrder;
+
+		ORD->setStatus(SRV);
+		ORD->SetServTime(ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+		AddtoInServiceList(ORD);
+		UrgentOrders.dequeue(UrgentOrder);
+
+		COK->SetCooking(true);
+		COK->SetOrderForServing(ORD);
+		COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
+		AddtoCooknig_Cooks(COK);
+		Injured_Cooks.DeleteItem(COK);
+		ORD = NULL;
+		COK = NULL;
+		UrgentOrder = NULL;
+	}
+
 	while (VIP_Orders.peekFront(ORD) && VIP_Cooks.peekFront(COK))
 	{
 		if (ORD->GetIsUrgent())
@@ -866,8 +919,8 @@ void Restaurant::DeliverOrders(int time)
 {
 	//Gnerating R
 	srand((unsigned int)time);
-	float R = ((float)rand() / (RAND_MAX))*100;
-	if (R>1)
+	float R = ((float)rand() / (RAND_MAX)) * 100;
+	if (R > 1)
 	{
 		R--;
 	}
@@ -879,17 +932,21 @@ void Restaurant::DeliverOrders(int time)
 	Cook** Cooknig_Cooks_Array = Cooknig_Cooks.toArray(numofcookingcooks);
 	if (R < InjProp)
 	{
-		for (int i = 0; i < numofcookingcooks; i++)
+		bool done = false;
+		for (int i = 0; i < numofcookingcooks && !done; i++)
 		{
 			if (!Cooknig_Cooks_Array[i]->GetIsInjured())
 			{
-				Cooknig_Cooks_Array[i]->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()- COK->GetSpeed()) / COK->GetSpeed()/2));
+				int timetodelieverorder = CurrentTimeStep + ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
+				int servicetime = ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
+				Cooknig_Cooks_Array[i]->SetTimeTODeliver(timetodelieverorder);
+				Cooknig_Cooks_Array[i]->GetServingOrder()->SetServTime(servicetime);
 				Cooknig_Cooks_Array[i]->WorkInjury();
-				//CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed())
-
+				done = true;
 			}
 		}
 	}
+
 	for (int i = 0; i < numofcookingcooks; i++)
 	{
 		if (Cooknig_Cooks_Array[i]->GetCooking())
@@ -907,20 +964,57 @@ void Restaurant::DeliverOrders(int time)
 				Cooknig_Cooks_Array[i]->SetCooking(false);
 				Cooknig_Cooks_Array[i]->SetOrderForServing(nullptr);
 				Cooknig_Cooks_Array[i]->SetTimeTODeliver(0);
-				switch (Cooknig_Cooks_Array[i]->GetType())
+
+
+
+				if (Cooknig_Cooks_Array[i]->GetIsInjured())
 				{
-				case TYPE_VIP:
-					VIP_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
-					break;
-				case TYPE_NRM:
-					Normal_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
-					break;			
-				case TYPE_VGAN:
-					Vegan_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
-						break;
-				default:
-					break;
+					if (Cooknig_Cooks_Array[i]->GetTimeBackWork())
+					{
+						Cooknig_Cooks_Array[i]->ResetNumOfServedOrders();
+						Cooknig_Cooks_Array[i]->SetTimeBackWork(0);
+						Cooknig_Cooks_Array[i]->Recovery();
+						switch (Cooknig_Cooks_Array[i]->GetType())
+						{
+						case TYPE_VIP:
+
+							VIP_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+							break;
+						case TYPE_NRM:
+
+							Normal_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+							break;
+						case TYPE_VGAN:
+
+							Vegan_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+							break;
+						}
+					}
+					else
+					{
+						Cooknig_Cooks_Array[i]->SetTimeBackWork(CurrentTimeStep + RstPrd);
+						Injured_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+					}
 				}
+				else
+				{
+					switch (Cooknig_Cooks_Array[i]->GetType())
+					{
+					case TYPE_VIP:
+
+						VIP_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+						break;
+					case TYPE_NRM:
+
+						Normal_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+						break;
+					case TYPE_VGAN:
+
+						Vegan_Cooks.pushEnd(Cooknig_Cooks_Array[i]);
+						break;
+					}
+				}
+
 
 				switch (ORD->GetType())
 				{
@@ -1039,7 +1133,7 @@ void Restaurant::Interactive_mode()
 
 		string Message1 = "TS :" + to_string(CurrentTimeStep);
 		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()-SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
 		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
 
 		//add all current ordes & cooks to GUI
@@ -1063,7 +1157,7 @@ void Restaurant::Interactive_mode()
 	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
 	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
 	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
-	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders+ NoOfPromotedOrders)) * 100;
+	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
 	Outputfile.close();
 
 	pGUI->DrawImage("ExitImage");
@@ -1163,7 +1257,7 @@ void Restaurant::Simple_Simulator()
 
 		string Message1 = "TS :" + to_string(CurrentTimeStep);
 		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_C) + " , VIP = " + to_string(VIP_C) + " , Vegan = " + to_string(Vegan_C);
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()-SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
 		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
 
 		//add all current ordes & cooks to GUI
@@ -1185,7 +1279,7 @@ void Restaurant::Step_By_Step_mode()
 	ReadInputs();
 	pGUI->PrintBackGrounds();
 	int CurrentTimeStep = 0;
-	
+
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty() || !Vegan_Orders.isEmpty() || !VIP_Orders.IsEmpty() || !UrgentOrders.isEmpty() || !Normal_Orders.IsEmpty())
 	{
@@ -1197,14 +1291,14 @@ void Restaurant::Step_By_Step_mode()
 		AutoPromotion(CurrentTimeStep);
 
 		AssignOrders(CurrentTimeStep);
-		
+
 		DeliverOrders(CurrentTimeStep);
 
 		//print current timestep
 
 		string Message1 = "TS :" + to_string(CurrentTimeStep);
 		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize()- SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
 		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
 
 		//add all current ordes & cooks to GUI
