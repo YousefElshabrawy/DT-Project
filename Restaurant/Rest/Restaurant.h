@@ -61,11 +61,13 @@ private:
 	int NumOfDeliveredVIPOrders;
 	int NumOfDeliveredNORMALOrders;
 	int NumOfDeliveredVEGANOrders;
+	int NumOfDeliveredUrgentOrders;
 	int SharedBTVIPandURG;
 	double TotalWaitTime;
 	double TotalServTime;
 	float NoOfPromotedOrders;
-	int NoOfPromotedOrders_VIP;
+	float NoOfPromotedOrders_VIP;
+	float NOofInjuredCooks;
 	int NumOfRecivedNORMALOrders;
 	int NumOfRecivedVIPOrders;
 	Order* ORD;
@@ -98,7 +100,7 @@ public:
 	void FillDrawingList();
 	void GivesBreaks(int Time);
 	void AutoPromotion(int time);
-	void AssignOrders(int time);
+	string AssignOrders(int time);
 	void DeliverOrders(int time);
 
 	//
@@ -122,10 +124,11 @@ public:
 
 /// ===================    Interactive mode-related functions.    ================= 
 
-	void Interactive_mode();	
-	void Simple_Simulator();
-	void Step_By_Step_mode();
-	void Silent_Mode();
+	//void Interactive_mode();	
+	//void Simple_Simulator();
+	//void Step_By_Step_mode();
+	//void Silent_Mode();
+	void simulation(char Mode);
 
 
 

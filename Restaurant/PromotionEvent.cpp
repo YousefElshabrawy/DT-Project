@@ -22,6 +22,7 @@ void PromotionEvent::Execute(Restaurant* pRest)
 		Order* ORD = pRest->GetNormalOrderByID(oID);
 		if (ORD)
 		{
+			ORD->SetWasNormal(false);
 			ORD->AddExtraMoney(ExMONY);
 			ORD->SetType(TYPE_VIP);
 			int Equation = ORD->GettotalMoney() + (1000 / (float)ORD->GetArrTime()) + ORD->GetSize();

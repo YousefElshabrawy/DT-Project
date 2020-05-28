@@ -36,6 +36,7 @@ public:
 	bool GetIsUrgent()const;
 	void setIsUrgent(bool val);
 	bool GetWasNormal();
+	void SetWasNormal(bool val);
 
 	void SetFinishTime(int time);
 	void SetServTime(int time);

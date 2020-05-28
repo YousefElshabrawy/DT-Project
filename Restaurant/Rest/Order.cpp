@@ -68,6 +68,11 @@ bool Order::GetWasNormal()
 	return WasNormal;
 }
 
+void Order::SetWasNormal(bool val)
+{
+	WasNormal = val;
+}
+
 void Order::SetFinishTime(int time)
 {
 	FinishTime = time;

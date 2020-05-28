@@ -14,6 +14,8 @@ Restaurant::Restaurant()
 	NumOfDeliveredVIPOrders = 0;
 	NumOfDeliveredNORMALOrders = 0;
 	NumOfDeliveredVEGANOrders = 0;
+	NumOfDeliveredUrgentOrders = 0;
+	NOofInjuredCooks = 0;
 	SharedBTVIPandURG = 0;
 	TotalWaitTime = 0;
 	TotalServTime = 0;
@@ -32,28 +34,31 @@ void Restaurant::RunSimulation()
 
 	case MODE_INTR: //Interactive mode
 
-		Interactive_mode();
+		simulation('I');
+		//Interactive_mode();
 
 		break;
 
 
 	case MODE_STEP: //Step by step mode 
 
-		Step_By_Step_mode();
+		simulation('S');
+		//Step_By_Step_mode();
 
 		break;
 
 
 	case MODE_SLNT: //Silent Mode
 
-		Silent_Mode();
+		simulation('N');
+		//Silent_Mode();
 
 		break;
 
 
 	case MODE_DEMO: //Demo mode
 
-		Simple_Simulator();
+		//Simple_Simulator();
 
 		break;
 
@@ -681,8 +686,9 @@ void Restaurant::AutoPromotion(int time)
 	}
 }
 
-void Restaurant::AssignOrders(int time)
+string Restaurant::AssignOrders(int time)
 {
+	string assignedorders = "\n";
 	int CurrentTimeStep = time;
 	//assign orders to in-service
 
@@ -701,6 +707,7 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		VIP_Cooks.DeleteItem(COK);
+		assignedorders += "V" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
 		ORD = NULL;
 		COK = NULL;
 		UrgentOrder = NULL;
@@ -721,6 +728,7 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		Normal_Cooks.DeleteItem(COK);
+		assignedorders += "N" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
 		ORD = NULL;
 		COK = NULL;
 		UrgentOrder = NULL;
@@ -741,6 +749,7 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		Vegan_Cooks.DeleteItem(COK);
+		assignedorders += "G" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
 		ORD = NULL;
 		COK = NULL;
 		UrgentOrder = NULL;
@@ -761,6 +770,20 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		Unavailable_Cooks.DeleteItem(COK);
+		switch (COK->GetType())
+		{
+		case TYPE_VIP:
+			assignedorders += "V" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
+			break;
+		case TYPE_NRM:
+			assignedorders += "N" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
+			break;
+		case TYPE_VGAN:
+			assignedorders += "G" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
+			break;
+		default:
+			break;
+		}
 		ORD = NULL;
 		COK = NULL;
 		UrgentOrder = NULL;
@@ -780,6 +803,20 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeTODeliver(CurrentTimeStep + ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 		AddtoCooknig_Cooks(COK);
 		Injured_Cooks.DeleteItem(COK);
+		switch (COK->GetType())
+		{
+		case TYPE_VIP:
+			assignedorders += "V" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
+			break;
+		case TYPE_NRM:
+			assignedorders += "N" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
+			break;
+		case TYPE_VGAN:
+			assignedorders += "G" + to_string(COK->GetID()) + "(U" + to_string(ORD->GetID()) + "),  ";
+			break;
+		default:
+			break;
+		}
 		ORD = NULL;
 		COK = NULL;
 		UrgentOrder = NULL;
@@ -806,6 +843,7 @@ void Restaurant::AssignOrders(int time)
 			COK->SetTimeBackWork(0);
 			AddtoCooknig_Cooks(COK);
 			VIP_Cooks.DeleteItem(COK);
+			assignedorders += "V" + to_string(COK->GetID()) + "(V" + to_string(ORD->GetID()) + "),  ";
 			ORD = NULL;
 			COK = NULL;
 		}
@@ -832,6 +870,7 @@ void Restaurant::AssignOrders(int time)
 			COK->SetTimeBackWork(0);
 			AddtoCooknig_Cooks(COK);
 			Normal_Cooks.DeleteItem(COK);
+			assignedorders += "N" + to_string(COK->GetID()) + "(V" + to_string(ORD->GetID()) + "),  ";
 			ORD = NULL;
 			COK = NULL;
 		}
@@ -858,6 +897,7 @@ void Restaurant::AssignOrders(int time)
 			COK->SetTimeBackWork(0);
 			AddtoCooknig_Cooks(COK);
 			Vegan_Cooks.DeleteItem(COK);
+			assignedorders += "G" + to_string(COK->GetID()) + "(V" + to_string(ORD->GetID()) + "),  ";
 			ORD = NULL;
 			COK = NULL;
 		}
@@ -876,6 +916,7 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		Vegan_Cooks.DeleteItem(COK);
+		assignedorders += "G" + to_string(COK->GetID()) + "(G" + to_string(ORD->GetID()) + "),  ";
 		ORD = NULL;
 		COK = NULL;
 	}
@@ -893,6 +934,7 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		Normal_Cooks.DeleteItem(COK);
+		assignedorders += "N" + to_string(COK->GetID()) + "(N" + to_string(ORD->GetID()) + "),  ";
 		ORD = NULL;
 		COK = NULL;
 	}
@@ -910,9 +952,11 @@ void Restaurant::AssignOrders(int time)
 		COK->SetTimeBackWork(0);
 		AddtoCooknig_Cooks(COK);
 		VIP_Cooks.DeleteItem(COK);
+		assignedorders += "V" + to_string(COK->GetID()) + "(N" + to_string(ORD->GetID()) + "),  ";
 		ORD = NULL;
 		COK = NULL;
 	}
+	return assignedorders;
 }
 
 void Restaurant::DeliverOrders(int time)
@@ -937,6 +981,7 @@ void Restaurant::DeliverOrders(int time)
 		{
 			if (!Cooknig_Cooks_Array[i]->GetIsInjured())
 			{
+				NOofInjuredCooks++;
 				int timetodelieverorder = CurrentTimeStep + ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
 				int servicetime = ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
 				Cooknig_Cooks_Array[i]->SetTimeTODeliver(timetodelieverorder);
@@ -1019,7 +1064,14 @@ void Restaurant::DeliverOrders(int time)
 				switch (ORD->GetType())
 				{
 				case TYPE_VIP:
-					NumOfDeliveredVIPOrders++;
+					if (ORD->GetIsUrgent())
+					{
+						NumOfDeliveredUrgentOrders++;
+					}
+					else
+					{
+						NumOfDeliveredVIPOrders++;
+					}
 					break;
 				case TYPE_NRM:
 					NumOfDeliveredNORMALOrders++;
@@ -1097,6 +1149,8 @@ void Restaurant::AddtoUrgentQueue(Order* po)
 
 
 
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 //---------------------------------> Projects Modes <--------------------------------------------
@@ -1108,180 +1162,295 @@ Interactive mode:
 allows user to monitor the restaurant operation. At each time step, program should provide output similar to that in the figure.
 In this mode, program pauses for a user mouse click to display the output of the next timestep.
 */
-void Restaurant::Interactive_mode()
-{
-
-	ReadInputs();
-	pGUI->PrintBackGrounds();
-	int CurrentTimeStep = 0;
-
-	//as long as events queue or in service orders are not empty yet
-	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
-	{
-		//execute all events at current time step
-		ExecuteEvents(CurrentTimeStep);
-
-		GivesBreaks(CurrentTimeStep);
-
-		AutoPromotion(CurrentTimeStep);
-
-		AssignOrders(CurrentTimeStep);
-
-		DeliverOrders(CurrentTimeStep);
-
-		//print current timestep
-
-		string Message1 = "TS :" + to_string(CurrentTimeStep);
-		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
-		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
-
-		//add all current ordes & cooks to GUI
-		FillDrawingList();
-
-		CurrentTimeStep++;	//advance timestep
-	}
-
-	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
-	ofstream Outputfile;
-	Outputfile.open("Output.txt");
-	Order* ORD;
-	Outputfile << "FT\tID\tAT\tWT\tST\n";
-	while (finished_List.peekFront(ORD))
-	{
-		TotalWaitTime += ORD->GetWaitTime();
-		TotalServTime += ORD->GetServTime();
-		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
-		finished_List.DeleteItem(ORD);
-	}
-	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
-	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
-	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
-	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
-	Outputfile.close();
-
-	pGUI->DrawImage("ExitImage");
-	pGUI->PrintMessage("generation done, click to END program");
-	pGUI->waitForClick();
-}
+//void Restaurant::Interactive_mode()
+//{
+//
+//	ReadInputs();
+//	pGUI->PrintBackGrounds();
+//	int CurrentTimeStep = 0;
+//
+//	//as long as events queue or in service orders are not empty yet
+//	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
+//	{
+//		//execute all events at current time step
+//		ExecuteEvents(CurrentTimeStep);
+//
+//		GivesBreaks(CurrentTimeStep);
+//
+//		AutoPromotion(CurrentTimeStep);
+//
+//		AssignOrders(CurrentTimeStep);
+//
+//		DeliverOrders(CurrentTimeStep);
+//
+//		//print current timestep
+//
+//		string Message1 = "TS :" + to_string(CurrentTimeStep);
+//		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
+//		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+//		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
+//
+//		//add all current ordes & cooks to GUI
+//		FillDrawingList();
+//
+//		CurrentTimeStep++;	//advance timestep
+//	}
+//
+//	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
+//	ofstream Outputfile;
+//	Outputfile.open("Output.txt");
+//	Order* ORD;
+//	Outputfile << "FT\tID\tAT\tWT\tST\n";
+//	while (finished_List.peekFront(ORD))
+//	{
+//		TotalWaitTime += ORD->GetWaitTime();
+//		TotalServTime += ORD->GetServTime();
+//		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
+//		finished_List.DeleteItem(ORD);
+//	}
+//	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
+//	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+//	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
+//	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
+//	Outputfile.close();
+//
+//	pGUI->DrawImage("ExitImage");
+//	pGUI->PrintMessage("generation done, click to END program");
+//	pGUI->waitForClick();
+//}
 
 
 /*
 Simple Simulator Is ONLY To Test phase 1 Code
 */
-void Restaurant::Simple_Simulator()
+//void Restaurant::Simple_Simulator()
+//{
+//	testing = true; //To check that it is only testing 
+//
+//	ReadInputs(); //Reading inputs from file
+//
+//	int CurrentTimeStep = 0;
+//
+//	//as long as events queue or in service orders are not empty yet
+//	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
+//	{
+//		//execute all events at current time step
+//		//should ignore promotion events 
+//		ExecuteEvents(CurrentTimeStep);
+//
+//		//Pick one order from each order type and move it to In-service list(s)
+//		Order* ORD;
+//		if (VIP_Orders.peekFront(ORD))
+//		{
+//			if (ORD->GetArrTime() != CurrentTimeStep)
+//			{
+//				ORD->setStatus(SRV);
+//				AddtoInServiceList(ORD);
+//				VIP_Orders.dequeue(ORD);
+//				ORD = NULL;
+//			}
+//		}
+//
+//		if (Normal_Orders.peekFront(ORD))
+//		{
+//			if (ORD->GetArrTime() != CurrentTimeStep)
+//			{
+//				ORD->setStatus(SRV);
+//				AddtoInServiceList(ORD);
+//				Normal_Orders.DeleteItem(ORD);
+//				ORD = NULL;
+//			}
+//		}
+//
+//		if (Vegan_Orders.peekFront(ORD))
+//		{
+//			if (ORD->GetArrTime() != CurrentTimeStep)
+//			{
+//				ORD->setStatus(SRV);
+//				AddtoInServiceList(ORD);
+//				Vegan_Orders.dequeue(ORD);
+//				ORD = NULL;
+//			}
+//		}
+//
+//		//Each 5 timesteps, move an order of each type from In-service list(s) to finished list(s)
+//		if (CurrentTimeStep % 5 == 0)
+//		{
+//			bool finishedNormal = false, finishedVIP = false, finishedVEGAN = false;
+//
+//			int nomOf_IN_SERVICE_ORDERS = In_Service_List.GetSize();
+//			Order** In_Service_Array = In_Service_List.toArray(nomOf_IN_SERVICE_ORDERS);
+//
+//			for (int i = 0; i < nomOf_IN_SERVICE_ORDERS; i++)
+//			{
+//				if (!finishedVIP && In_Service_Array[i]->GetType() == TYPE_VIP)
+//				{
+//					In_Service_Array[i]->setStatus(DONE);
+//					ADDtoFinishedList(In_Service_Array[i]);
+//					In_Service_List.DeleteItem(In_Service_Array[i]);
+//					finishedVIP = true;
+//				}
+//				else if (!finishedNormal && In_Service_Array[i]->GetType() == TYPE_NRM)
+//				{
+//					In_Service_Array[i]->setStatus(DONE);
+//					ADDtoFinishedList(In_Service_Array[i]);
+//					In_Service_List.DeleteItem(In_Service_Array[i]);
+//					finishedNormal = true;
+//				}
+//				else if (!finishedVEGAN && In_Service_Array[i]->GetType() == TYPE_VGAN)
+//				{
+//					In_Service_Array[i]->setStatus(DONE);
+//					ADDtoFinishedList(In_Service_Array[i]);
+//					In_Service_List.DeleteItem(In_Service_Array[i]);
+//					finishedVEGAN = true;
+//				}
+//			}
+//		}
+//
+//		//print current timestep
+//
+//		string Message1 = "TS :" + to_string(CurrentTimeStep);
+//		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_C) + " , VIP = " + to_string(VIP_C) + " , Vegan = " + to_string(Vegan_C);
+//		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+//		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
+//
+//		//add all current ordes & cooks to GUI
+//		FillDrawingList();
+//
+//		pGUI->waitForClick();
+//		CurrentTimeStep++;	//advance timestep
+//	}
+//
+//
+//
+//	pGUI->DrawImage("ExitImage");
+//	pGUI->PrintMessage("generation done, click to END program");
+//	pGUI->waitForClick();
+//}
+
+//void Restaurant::Step_By_Step_mode()
+//{
+//	ReadInputs();
+//	pGUI->PrintBackGrounds();
+//	int CurrentTimeStep = 0;
+//
+//	//as long as events queue or in service orders are not empty yet
+//	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty() || !Vegan_Orders.isEmpty() || !VIP_Orders.IsEmpty() || !UrgentOrders.isEmpty() || !Normal_Orders.IsEmpty())
+//	{
+//		//execute all events at current time step
+//		ExecuteEvents(CurrentTimeStep);
+//
+//		GivesBreaks(CurrentTimeStep);
+//
+//		AutoPromotion(CurrentTimeStep);
+//
+//		AssignOrders(CurrentTimeStep);
+//
+//		DeliverOrders(CurrentTimeStep);
+//
+//		//print current timestep
+//
+//		string Message1 = "TS :" + to_string(CurrentTimeStep);
+//		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
+//		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
+//		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
+//
+//		//add all current ordes & cooks to GUI
+//		FillDrawingList();
+//
+//		pGUI->waitForClick();
+//		CurrentTimeStep++;	//advance timestep
+//	}
+//
+//	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
+//	ofstream Outputfile;
+//	Outputfile.open("Output.txt");
+//	Order* ORD;
+//	Outputfile << "FT\tID\tAT\tWT\tST\n";
+//	while (finished_List.peekFront(ORD))
+//	{
+//		TotalWaitTime += ORD->GetWaitTime();
+//		TotalServTime += ORD->GetServTime();
+//		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
+//		finished_List.DeleteItem(ORD);
+//	}
+//	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
+//	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+//	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
+//	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
+//	Outputfile.close();
+//
+//	pGUI->DrawImage("ExitImage");
+//	pGUI->PrintMessage("generation done, click to END program");
+//	pGUI->waitForClick();
+//}
+
+//void Restaurant::Silent_Mode()
+//{
+//	ReadInputs();
+//	int CurrentTimeStep = 0;
+//
+//	//as long as events queue or in service orders are not empty yet
+//	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
+//	{
+//		//execute all events at current time step
+//		ExecuteEvents(CurrentTimeStep);
+//
+//		GivesBreaks(CurrentTimeStep);
+//
+//		AutoPromotion(CurrentTimeStep);
+//
+//		AssignOrders(CurrentTimeStep);
+//
+//		DeliverOrders(CurrentTimeStep);
+//
+//
+//		CurrentTimeStep++;	//advance timestep
+//	}
+//
+//	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
+//	ofstream Outputfile;
+//	Outputfile.open("Output.txt");
+//	Order* ORD;
+//	Outputfile << "FT\tID\tAT\tWT\tST\n";
+//	while (finished_List.peekFront(ORD))
+//	{
+//		TotalWaitTime += ORD->GetWaitTime();
+//		TotalServTime += ORD->GetServTime();
+//		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
+//		finished_List.DeleteItem(ORD);
+//	}
+//	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
+//	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+//	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
+//	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
+//	Outputfile.close();
+//
+//	pGUI->DrawImage("ExitImage");
+//	pGUI->PrintMessage("generation done, click to END program");
+//	pGUI->waitForClick();
+//}
+
+
+void Restaurant::simulation(char Mode)
 {
-	testing = true; //To check that it is only testing 
+	/////////////////////////////////////////////////////////
+	//
+	//		Node(I):for Interactive Mode
+	//		Node(S):for StepbyStep Mode
+	//		Node(N):for Silent Mode
+	//
+	/////////////////////////////////////////////////////////
 
-	ReadInputs(); //Reading inputs from file
-
+	ReadInputs();
+	if (Mode != 'N')
+	{
+		pGUI->PrintBackGrounds();
+	}
 	int CurrentTimeStep = 0;
 
 	//as long as events queue or in service orders are not empty yet
 	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
-	{
-		//execute all events at current time step
-		//should ignore promotion events 
-		ExecuteEvents(CurrentTimeStep);
-
-		//Pick one order from each order type and move it to In-service list(s)
-		Order* ORD;
-		if (VIP_Orders.peekFront(ORD))
-		{
-			if (ORD->GetArrTime() != CurrentTimeStep)
-			{
-				ORD->setStatus(SRV);
-				AddtoInServiceList(ORD);
-				VIP_Orders.dequeue(ORD);
-				ORD = NULL;
-			}
-		}
-
-		if (Normal_Orders.peekFront(ORD))
-		{
-			if (ORD->GetArrTime() != CurrentTimeStep)
-			{
-				ORD->setStatus(SRV);
-				AddtoInServiceList(ORD);
-				Normal_Orders.DeleteItem(ORD);
-				ORD = NULL;
-			}
-		}
-
-		if (Vegan_Orders.peekFront(ORD))
-		{
-			if (ORD->GetArrTime() != CurrentTimeStep)
-			{
-				ORD->setStatus(SRV);
-				AddtoInServiceList(ORD);
-				Vegan_Orders.dequeue(ORD);
-				ORD = NULL;
-			}
-		}
-
-		//Each 5 timesteps, move an order of each type from In-service list(s) to finished list(s)
-		if (CurrentTimeStep % 5 == 0)
-		{
-			bool finishedNormal = false, finishedVIP = false, finishedVEGAN = false;
-
-			int nomOf_IN_SERVICE_ORDERS = In_Service_List.GetSize();
-			Order** In_Service_Array = In_Service_List.toArray(nomOf_IN_SERVICE_ORDERS);
-
-			for (int i = 0; i < nomOf_IN_SERVICE_ORDERS; i++)
-			{
-				if (!finishedVIP && In_Service_Array[i]->GetType() == TYPE_VIP)
-				{
-					In_Service_Array[i]->setStatus(DONE);
-					ADDtoFinishedList(In_Service_Array[i]);
-					In_Service_List.DeleteItem(In_Service_Array[i]);
-					finishedVIP = true;
-				}
-				else if (!finishedNormal && In_Service_Array[i]->GetType() == TYPE_NRM)
-				{
-					In_Service_Array[i]->setStatus(DONE);
-					ADDtoFinishedList(In_Service_Array[i]);
-					In_Service_List.DeleteItem(In_Service_Array[i]);
-					finishedNormal = true;
-				}
-				else if (!finishedVEGAN && In_Service_Array[i]->GetType() == TYPE_VGAN)
-				{
-					In_Service_Array[i]->setStatus(DONE);
-					ADDtoFinishedList(In_Service_Array[i]);
-					In_Service_List.DeleteItem(In_Service_Array[i]);
-					finishedVEGAN = true;
-				}
-			}
-		}
-
-		//print current timestep
-
-		string Message1 = "TS :" + to_string(CurrentTimeStep);
-		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_C) + " , VIP = " + to_string(VIP_C) + " , Vegan = " + to_string(Vegan_C);
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
-		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
-
-		//add all current ordes & cooks to GUI
-		FillDrawingList();
-
-		pGUI->waitForClick();
-		CurrentTimeStep++;	//advance timestep
-	}
-
-
-
-	pGUI->DrawImage("ExitImage");
-	pGUI->PrintMessage("generation done, click to END program");
-	pGUI->waitForClick();
-}
-
-void Restaurant::Step_By_Step_mode()
-{
-	ReadInputs();
-	pGUI->PrintBackGrounds();
-	int CurrentTimeStep = 0;
-
-	//as long as events queue or in service orders are not empty yet
-	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty() || !Vegan_Orders.isEmpty() || !VIP_Orders.IsEmpty() || !UrgentOrders.isEmpty() || !Normal_Orders.IsEmpty())
 	{
 		//execute all events at current time step
 		ExecuteEvents(CurrentTimeStep);
@@ -1290,21 +1459,33 @@ void Restaurant::Step_By_Step_mode()
 
 		AutoPromotion(CurrentTimeStep);
 
-		AssignOrders(CurrentTimeStep);
+		string AssignedOrders = AssignOrders(CurrentTimeStep);
 
 		DeliverOrders(CurrentTimeStep);
 
-		//print current timestep
+		if (Mode != 'N')
+		{
+			//print current timestep
+			string Message1 = "TS :" + to_string(CurrentTimeStep);
+			string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
+			string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize()) + " , Urgent = " + to_string(UrgentOrders.GetSize());
+			string ServedOrders = "Served Orders ---> Normal = " + to_string(NumOfDeliveredNORMALOrders) + " , VIP = " + to_string(NumOfDeliveredVIPOrders) + " , Vegan = " + to_string(NumOfDeliveredVEGANOrders) + " , Urgent = " + to_string(NumOfDeliveredUrgentOrders);
+			pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders, AssignedOrders, ServedOrders);
 
-		string Message1 = "TS :" + to_string(CurrentTimeStep);
-		string AvailableCooks = "Avaiable Cooks ---> Normal = " + to_string(Normal_Cooks.GetSize()) + " , VIP = " + to_string(VIP_Cooks.GetSize()) + " , Vegan = " + to_string(Vegan_Cooks.GetSize());
-		string WaitingOrders = "Waiting Orders ---> Normal = " + to_string(Normal_Orders.GetSize()) + " , VIP = " + to_string(VIP_Orders.GetSize() - SharedBTVIPandURG) + " , Vegan = " + to_string(Vegan_Orders.GetSize());
-		pGUI->PrintMessage(Message1, AvailableCooks, WaitingOrders);
+			//add all current ordes & cooks to GUI
+			FillDrawingList();
 
-		//add all current ordes & cooks to GUI
-		FillDrawingList();
+			switch (Mode)
+			{
+			case 'I':
+				pGUI->waitForClick();
+				break;
+			case 'S':
+				Sleep(1000);
+				break;
+			}
+		}
 
-		pGUI->waitForClick();
 		CurrentTimeStep++;	//advance timestep
 	}
 
@@ -1321,55 +1502,9 @@ void Restaurant::Step_By_Step_mode()
 		finished_List.DeleteItem(ORD);
 	}
 	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
-	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
+	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << ", Injured: " << NOofInjuredCooks << "]\n";
 	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
-	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
-	Outputfile.close();
-
-	pGUI->DrawImage("ExitImage");
-	pGUI->PrintMessage("generation done, click to END program");
-	pGUI->waitForClick();
-}
-
-void Restaurant::Silent_Mode()
-{
-	ReadInputs();
-	int CurrentTimeStep = 0;
-
-	//as long as events queue or in service orders are not empty yet
-	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
-	{
-		//execute all events at current time step
-		ExecuteEvents(CurrentTimeStep);
-
-		GivesBreaks(CurrentTimeStep);
-
-		AutoPromotion(CurrentTimeStep);
-
-		AssignOrders(CurrentTimeStep);
-
-		DeliverOrders(CurrentTimeStep);
-
-
-		CurrentTimeStep++;	//advance timestep
-	}
-
-	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
-	ofstream Outputfile;
-	Outputfile.open("Output.txt");
-	Order* ORD;
-	Outputfile << "FT\tID\tAT\tWT\tST\n";
-	while (finished_List.peekFront(ORD))
-	{
-		TotalWaitTime += ORD->GetWaitTime();
-		TotalServTime += ORD->GetServTime();
-		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
-		finished_List.DeleteItem(ORD);
-	}
-	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
-	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << "]\n";
-	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
-	Outputfile << "Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100;
+	Outputfile << "Urgent Orders: " << NoOfPromotedOrders_VIP << ", Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100 << "%\n";
 	Outputfile.close();
 
 	pGUI->DrawImage("ExitImage");
