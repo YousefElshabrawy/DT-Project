@@ -166,7 +166,7 @@ void Restaurant::ReadInputs()
 		int TS; //Type step
 		int ID; //is a unique sequence number that identifies each order.
 		int SIZE; //is the number of dishes of the order
-		int MONY; //is the total order money.
+		float MONY; //is the total order money.
 
 
 		InputFile >> EVENT; //Reading the Event Type (VIP,Normal,Vegan)
@@ -965,7 +965,7 @@ void Restaurant::InjuryDuringDuty(int Time)
 	//Gnerating R
 	//srand((unsigned int)time(NULL));
 	float R = ((float)rand() / (RAND_MAX));
-	if (R > 1)
+	while (R > 1)
 	{
 		R--;
 	}
@@ -984,12 +984,21 @@ void Restaurant::InjuryDuringDuty(int Time)
 
 				NOofInjuredCooks++;
 				int CookSpeed = Cooknig_Cooks_Array[i]->GetSpeed();
-				int OrderSize = Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize();
-				int OrderSerTime = Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime();
+				float OrderSize = Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize();
+				float OrderSerTime = Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime();
 				int PrevTimeToDeliver = Cooknig_Cooks_Array[i]->GetTimeTODeliver();
-				int RestOfSize = (OrderSerTime - (PrevTimeToDeliver - CurrentTimeStep)) * CookSpeed; //Clean Code please
-				
-				int timetodelieverorder = CurrentTimeStep + (PrevTimeToDeliver - CurrentTimeStep) * 2;
+				int newspeed = CookSpeed / 2;
+				if (newspeed<1)
+				{
+					newspeed = 1;
+				}
+				float RestOfSize = OrderSize- (OrderSerTime - (PrevTimeToDeliver - CurrentTimeStep)) * CookSpeed; //Clean Code please
+				if (RestOfSize<0)
+				{
+					RestOfSize = 0;
+				}
+				int timetodelieverorder = CurrentTimeStep + ceil(RestOfSize / newspeed);
+				//int timetodelieverorder = CurrentTimeStep + (PrevTimeToDeliver - CurrentTimeStep) * 2;
 				int servicetime = timetodelieverorder - (PrevTimeToDeliver - OrderSerTime);
 				
 				//int servicetime = ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
@@ -1489,7 +1498,7 @@ void Restaurant::simulation(char Mode)
 	int CurrentTimeStep = 0;
 
 	//as long as events queue or in service orders are not empty yet
-	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty() || !Vegan_Orders.isEmpty() || !VIP_Orders.IsEmpty() || !UrgentOrders.isEmpty() || !Normal_Orders.IsEmpty())
+	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty() || !Vegan_Orders.isEmpty() || !VIP_Orders.IsEmpty() || !UrgentOrders.isEmpty() || !Normal_Orders.IsEmpty() || !Unavailable_Cooks.IsEmpty() || !Injured_Cooks.IsEmpty())
 	{
 		//execute all events at current time step
 		ExecuteEvents(CurrentTimeStep);
