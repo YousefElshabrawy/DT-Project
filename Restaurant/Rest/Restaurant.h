@@ -101,7 +101,9 @@ public:
 	void GivesBreaks(int Time);
 	void AutoPromotion(int time);
 	string AssignOrders(int time);
+	void InjuryDuringDuty(int Time);
 	void DeliverOrders(int time);
+	void OPFile();
 
 	//
 	// TODO: Add More Member Functions As Needed

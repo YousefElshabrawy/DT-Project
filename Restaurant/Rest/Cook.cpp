@@ -1,6 +1,17 @@
 #include "Cook.h"
+#include <iostream>
+using namespace std;
 
-
+int Cook::random(int min, int max)
+{
+	static bool Seeding = true;
+	if (Seeding)
+	{
+		srand(time(NULL));
+		Seeding = false;
+	}
+	return min+rand()%((max+1)-min);
+}
 
 Cook::Cook()
 {
@@ -11,32 +22,34 @@ Cook::Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_m
 	this->ID = ID;
 	type = oT;
 
-	srand((unsigned int)time(NULL));
-	int randomSpeed;
-	int ranom = rand() % Max_Speed;
-	randomSpeed = (ranom) + Min_Speed;
-	if (randomSpeed> Max_Speed)
-	{
-		speed = Max_Speed;
-	}
-	else
-	{
-		speed = randomSpeed;
-	}
+	speed = random(Min_Speed, Max_Speed);
+	//srand((unsigned int)time(NULL));
+	//int randomSpeed;
+	//int ranom = rand() % Max_Speed;
+	//randomSpeed = (ranom) + Min_Speed;
+	//if (randomSpeed> Max_Speed)
+	//{
+	//	speed = randomSpeed - Min_Speed;
+	//}
+	//else
+	//{
+	//	speed = randomSpeed;
+	//}
 	subspeed = speed;
-	srand((unsigned int)time(NULL));
-	int randomBreak;
+
+	Break_Duration = random(B_min, B_max);
+	//srand((unsigned int)time(NULL));
+	/*int randomBreak;
 	ranom = rand() % B_max;
 	randomBreak = (ranom) + B_min;
 	if (randomBreak > B_max)
 	{
-		Break_Duration = B_max;
+		Break_Duration = randomBreak - B_min;
 	}
 	else
 	{
 		Break_Duration = randomBreak;
-	}
-	//_sleep(1000);
+	}*/
 
 	Number_Orders_BeforeBreak = NumberBeforeBreak;
 	cooking = false;
@@ -178,6 +191,10 @@ void Cook::WorkInjury()
 {
 	IsInjured = true;
 	speed /= 2;
+	if (speed<1)
+	{
+		speed = 1;
+	}
 }
 
 void Cook::Recovery()

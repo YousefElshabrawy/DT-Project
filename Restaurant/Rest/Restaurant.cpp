@@ -620,6 +620,7 @@ void Restaurant::GivesBreaks(int Time)
 			Injured_Cooks.DeleteItem(Injured_Cooks_Array[i]);
 		}
 	}
+
 }
 
 void Restaurant::AutoPromotion(int time)
@@ -959,38 +960,54 @@ string Restaurant::AssignOrders(int time)
 	return assignedorders;
 }
 
-void Restaurant::DeliverOrders(int time)
+void Restaurant::InjuryDuringDuty(int Time)
 {
 	//Gnerating R
-	srand((unsigned int)time);
-	float R = ((float)rand() / (RAND_MAX)) * 100;
+	//srand((unsigned int)time(NULL));
+	float R = ((float)rand() / (RAND_MAX));
 	if (R > 1)
 	{
 		R--;
 	}
 
-	int CurrentTimeStep = time;
+	int CurrentTimeStep = Time;
 
-	//move finished orders from In-service list to finished list
 	int numofcookingcooks = Cooknig_Cooks.GetSize();
 	Cook** Cooknig_Cooks_Array = Cooknig_Cooks.toArray(numofcookingcooks);
-	if (R < InjProp)
+	if (R <= InjProp)
 	{
 		bool done = false;
 		for (int i = 0; i < numofcookingcooks && !done; i++)
 		{
 			if (!Cooknig_Cooks_Array[i]->GetIsInjured())
 			{
+
 				NOofInjuredCooks++;
-				int timetodelieverorder = CurrentTimeStep + ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
-				int servicetime = ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
+				int CookSpeed = Cooknig_Cooks_Array[i]->GetSpeed();
+				int OrderSize = Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize();
+				int OrderSerTime = Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime();
+				int PrevTimeToDeliver = Cooknig_Cooks_Array[i]->GetTimeTODeliver();
+				int RestOfSize = (OrderSerTime - (PrevTimeToDeliver - CurrentTimeStep)) * CookSpeed; //Clean Code please
+				
+				int timetodelieverorder = CurrentTimeStep + (PrevTimeToDeliver - CurrentTimeStep) * 2;
+				int servicetime = timetodelieverorder - (PrevTimeToDeliver - OrderSerTime);
+				
+				//int servicetime = ceil((float)(Cooknig_Cooks_Array[i]->GetServingOrder()->GetSize() - ((Cooknig_Cooks_Array[i]->GetServingOrder()->GetServTime() - (Cooknig_Cooks_Array[i]->GetTimeTODeliver() - CurrentTimeStep)) * Cooknig_Cooks_Array[i]->GetSpeed())) / (Cooknig_Cooks_Array[i]->GetSpeed() / 2));
 				Cooknig_Cooks_Array[i]->SetTimeTODeliver(timetodelieverorder);
 				Cooknig_Cooks_Array[i]->GetServingOrder()->SetServTime(servicetime);
 				Cooknig_Cooks_Array[i]->WorkInjury();
 				done = true;
+
 			}
 		}
 	}
+}
+
+void Restaurant::DeliverOrders(int time)
+{
+	int CurrentTimeStep = time;
+	int numofcookingcooks = Cooknig_Cooks.GetSize();
+	Cook** Cooknig_Cooks_Array = Cooknig_Cooks.toArray(numofcookingcooks);
 
 	for (int i = 0; i < numofcookingcooks; i++)
 	{
@@ -1090,6 +1107,27 @@ void Restaurant::DeliverOrders(int time)
 	}
 }
 
+void Restaurant::OPFile()
+{
+	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders + NumOfDeliveredUrgentOrders;
+	ofstream Outputfile;
+	Outputfile.open("Output.txt");
+	Order* ORD;
+	Outputfile << "FT\tID\tAT\tWT\tST\n";
+	while (finished_List.peekFront(ORD))
+	{
+		TotalWaitTime += ORD->GetWaitTime();
+		TotalServTime += ORD->GetServTime();
+		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
+		finished_List.DeleteItem(ORD);
+	}
+	Outputfile << "Orders: " << NumOfTotalOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
+	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << ", Injured: " << NOofInjuredCooks << "]\n";
+	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
+	Outputfile << "Urgent Orders: " << NoOfPromotedOrders_VIP << ", Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100 << "%\n";
+	Outputfile.close();
+}
+
 
 //This Function to return an Order from the List to Use it in the Events
 Order* Restaurant::GetNormalOrderByID(int ID)
@@ -1143,6 +1181,7 @@ void Restaurant::AddtoCooknig_Cooks(Cook* CK)
 void Restaurant::AddtoUrgentQueue(Order* po)
 {
 	Order** UrgentOrder = new Order*;
+	Order* Ord = po;
 	*UrgentOrder = po;
 	UrgentOrders.enqueue(UrgentOrder);
 }
@@ -1450,7 +1489,7 @@ void Restaurant::simulation(char Mode)
 	int CurrentTimeStep = 0;
 
 	//as long as events queue or in service orders are not empty yet
-	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty())
+	while (!EventsQueue.isEmpty() || !In_Service_List.IsEmpty() || !Vegan_Orders.isEmpty() || !VIP_Orders.IsEmpty() || !UrgentOrders.isEmpty() || !Normal_Orders.IsEmpty())
 	{
 		//execute all events at current time step
 		ExecuteEvents(CurrentTimeStep);
@@ -1460,6 +1499,8 @@ void Restaurant::simulation(char Mode)
 		AutoPromotion(CurrentTimeStep);
 
 		string AssignedOrders = AssignOrders(CurrentTimeStep);
+
+		InjuryDuringDuty(CurrentTimeStep);
 
 		DeliverOrders(CurrentTimeStep);
 
@@ -1489,23 +1530,7 @@ void Restaurant::simulation(char Mode)
 		CurrentTimeStep++;	//advance timestep
 	}
 
-	int NumOfTotalOrders = NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders;
-	ofstream Outputfile;
-	Outputfile.open("Output.txt");
-	Order* ORD;
-	Outputfile << "FT\tID\tAT\tWT\tST\n";
-	while (finished_List.peekFront(ORD))
-	{
-		TotalWaitTime += ORD->GetWaitTime();
-		TotalServTime += ORD->GetServTime();
-		Outputfile << ORD->GetFinishTime() << "\t" << ORD->GetID() << "\t" << ORD->GetArrTime() << "\t" << ORD->GetWaitTime() << "\t" << ORD->GetServTime() << "\n";
-		finished_List.DeleteItem(ORD);
-	}
-	Outputfile << "Orders: " << NumOfDeliveredVIPOrders + NumOfDeliveredNORMALOrders + NumOfDeliveredVEGANOrders << " [Norm: " << NumOfDeliveredNORMALOrders << ", Veg: " << NumOfDeliveredVEGANOrders << ", VIP: " << NumOfDeliveredVIPOrders << "]\n";
-	Outputfile << "Cooks: " << Normal_C + Vegan_C + VIP_C << " [Norm: " << Normal_C << ", Veg: " << Vegan_C << ", VIP: " << VIP_C << ", Injured: " << NOofInjuredCooks << "]\n";
-	Outputfile << "Avg Wait = " << TotalWaitTime / NumOfTotalOrders << ", Avg Serv = " << TotalServTime / NumOfTotalOrders << "\n";
-	Outputfile << "Urgent Orders: " << NoOfPromotedOrders_VIP << ", Auto-promoted: " << ((float)NoOfPromotedOrders / (NumOfDeliveredNORMALOrders + NoOfPromotedOrders)) * 100 << "%\n";
-	Outputfile.close();
+	OPFile();
 
 	pGUI->DrawImage("ExitImage");
 	pGUI->PrintMessage("generation done, click to END program");

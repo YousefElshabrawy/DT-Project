@@ -23,6 +23,10 @@ class Cook
 	bool IsInjured;
 	int subspeed;
 	
+	//Utility function for randomization 
+
+	int random(int min, int max);
+
 public:
 	Cook();
 	Cook(int ID, ORD_TYPE oT, int Max_Speed, int Min_Speed, int B_max, int B_min, int NumberBeforeBreak);
