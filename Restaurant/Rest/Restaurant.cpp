@@ -345,7 +345,7 @@ void Restaurant::FillDrawingList()
 	Order** VIP_Orders_Array = VIP_Orders.ToArray(nomOf_VIP_Orders);
 	Order** Normal_Orders_Array = Normal_Orders.toArray(nomOf_Normal_Orders);
 	Order** Vegan_Orders_Array = Vegan_Orders.toArray(nomOf_Vegan_Orders);
-	Order*** Urgent_Orders_Array = UrgentOrders.toArray(nomOf_Urgent_Orders);
+	Order** Urgent_Orders_Array = UrgentOrders.toArray(nomOf_Urgent_Orders);
 	Order** Waiting_List = new Order * [nomOf_Waiting_Orders];
 	Order** IN_Service_Array = In_Service_List.toArray(nomOf_IN_Service_Orders);
 	Order** Finished_Array = finished_List.toArray(nomOf_Finished_Orders);
@@ -421,12 +421,12 @@ void Restaurant::FillDrawingList()
 
 		if (condition4)
 		{
-			Order*** PPPUO = new Order**;
-			Order* PUO;
-			PUO = *Urgent_Orders_Array[Urgentindex];
-			while (Urgentindex != nomOf_Urgent_Orders && PUO->GetArrTime() == i)
+			//Order*** PPPUO = new Order**;
+			//Order* PUO;
+			//PUO = *Urgent_Orders_Array[Urgentindex];
+			while (Urgentindex != nomOf_Urgent_Orders && Urgent_Orders_Array[Urgentindex]->GetArrTime() == i)
 			{
-				Waiting_List[waitingindex] = *Urgent_Orders_Array[Urgentindex];
+				Waiting_List[waitingindex] = Urgent_Orders_Array[Urgentindex];
 				Urgentindex += 1;
 				waitingindex += 1;
 			}
@@ -693,14 +693,14 @@ string Restaurant::AssignOrders(int time)
 	int CurrentTimeStep = time;
 	//assign orders to in-service
 
-	while (UrgentOrders.peekFront(UrgentOrder) && VIP_Cooks.peekFront(COK))
+	while (UrgentOrders.peekFront(ORD) && VIP_Cooks.peekFront(COK))
 	{
-		ORD = *UrgentOrder;
+		//ORD = *UrgentOrder;
 
 		ORD->setStatus(SRV);
 		ORD->SetServTime(ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 		AddtoInServiceList(ORD);
-		UrgentOrders.dequeue(UrgentOrder);
+		UrgentOrders.dequeue(ORD);
 
 		COK->SetCooking(true);
 		COK->SetOrderForServing(ORD);
@@ -714,14 +714,14 @@ string Restaurant::AssignOrders(int time)
 		UrgentOrder = NULL;
 	}
 
-	while (UrgentOrders.peekFront(UrgentOrder) && Normal_Cooks.peekFront(COK))
+	while (UrgentOrders.peekFront(ORD) && Normal_Cooks.peekFront(COK))
 	{
-		ORD = *UrgentOrder;
+		//ORD = *UrgentOrder;
 
 		ORD->setStatus(SRV);
 		ORD->SetServTime(ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 		AddtoInServiceList(ORD);
-		UrgentOrders.dequeue(UrgentOrder);
+		UrgentOrders.dequeue(ORD);
 
 		COK->SetCooking(true);
 		COK->SetOrderForServing(ORD);
@@ -735,14 +735,14 @@ string Restaurant::AssignOrders(int time)
 		UrgentOrder = NULL;
 	}
 
-	while (UrgentOrders.peekFront(UrgentOrder) && Vegan_Cooks.peekFront(COK))
+	while (UrgentOrders.peekFront(ORD) && Vegan_Cooks.peekFront(COK))
 	{
-		ORD = *UrgentOrder;
+		//ORD = *UrgentOrder;
 
 		ORD->setStatus(SRV);
 		ORD->SetServTime(ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 		AddtoInServiceList(ORD);
-		UrgentOrders.dequeue(UrgentOrder);
+		UrgentOrders.dequeue(ORD);
 
 		COK->SetCooking(true);
 		COK->SetOrderForServing(ORD);
@@ -756,14 +756,14 @@ string Restaurant::AssignOrders(int time)
 		UrgentOrder = NULL;
 	}
 
-	while (UrgentOrders.peekFront(UrgentOrder) && Unavailable_Cooks.peekFront(COK))
+	while (UrgentOrders.peekFront(ORD) && Unavailable_Cooks.peekFront(COK))
 	{
-		ORD = *UrgentOrder;
+		//ORD = *UrgentOrder;
 
 		ORD->setStatus(SRV);
 		ORD->SetServTime(ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 		AddtoInServiceList(ORD);
-		UrgentOrders.dequeue(UrgentOrder);
+		UrgentOrders.dequeue(ORD);
 
 		COK->SetCooking(true);
 		COK->SetOrderForServing(ORD);
@@ -790,14 +790,14 @@ string Restaurant::AssignOrders(int time)
 		UrgentOrder = NULL;
 	}
 
-	while (UrgentOrders.peekFront(UrgentOrder) && Injured_Cooks.peekFront(COK))
+	while (UrgentOrders.peekFront(ORD) && Injured_Cooks.peekFront(COK))
 	{
-		ORD = *UrgentOrder;
+		//ORD = *UrgentOrder;
 
 		ORD->setStatus(SRV);
 		ORD->SetServTime(ceil((float)(ORD->GetSize()) / COK->GetSpeed()));
 		AddtoInServiceList(ORD);
-		UrgentOrders.dequeue(UrgentOrder);
+		UrgentOrders.dequeue(ORD);
 
 		COK->SetCooking(true);
 		COK->SetOrderForServing(ORD);
@@ -1189,10 +1189,11 @@ void Restaurant::AddtoCooknig_Cooks(Cook* CK)
 
 void Restaurant::AddtoUrgentQueue(Order* po)
 {
-	Order** UrgentOrder = new Order*;
-	Order* Ord = po;
-	*UrgentOrder = po;
-	UrgentOrders.enqueue(UrgentOrder);
+	//Order** UrgentOrder = new Order*;
+	//Order* Ord = po;
+	//*UrgentOrder = po;
+	//UrgentOrders.enqueue(UrgentOrder);
+	UrgentOrders.enqueue(po);
 }
 
 

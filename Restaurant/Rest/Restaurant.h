@@ -33,7 +33,7 @@ private:
 
 	PiriorityQueue<Order*> VIP_Orders;
 	Queue<Order*> Vegan_Orders;
-	Queue<Order**> UrgentOrders;
+	Queue<Order*> UrgentOrders;
 	//Queue<Order*> Normal_Orders;
 	ListADT<Order*>Normal_Orders;
 	ListADT<Order*>In_Service_List;
